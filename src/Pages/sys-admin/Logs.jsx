@@ -42,20 +42,20 @@ const Logs = () => {
           selector: (row) => row.transaction,
           sortable: true,
           center: true,
-          width: '280px',
+          width: '480px',
         },
         {
           name: 'User',
           selector: (row) => row.user,
           sortable: true,
           center: true,
-          width: '380px',
+          width: '280px',
         },        {
           name: 'Created',
           selector: (row) => row.created,
           sortable: true,
           center: true,
-          width: '380px',
+          width: '280px',
         },
       ];
 
@@ -68,13 +68,13 @@ const Logs = () => {
                 columns={columns}
                 data={logs}
                 pagination
-                // onFilter={(data, search) =>
-                //   data.filter((item) =>
-                //     Object.values(item).some((value) =>
-                //       String(value).toLowerCase().includes(search.toLowerCase())
-                //     )
-                //   )
-                // }
+                onFilter={(data, search) =>
+                  data.filter((item) =>
+                    Object.values(item).some((value) =>
+                      String(value).toLowerCase().includes(search.toLowerCase())
+                    )
+                  )
+                }
                 defaultSearchValue=""
               />          
             </Paper>

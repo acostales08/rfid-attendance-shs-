@@ -4,10 +4,12 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import CancelIcon from "@mui/icons-material/Cancel";
+import { useUser } from '../../../../utils/context/userContext';
 
 import {
   fetchData,
   AcreateData,
+  add,
   createData,
 } from '../../../../utils/api';
 
@@ -68,6 +70,23 @@ const TeacherAcademic = ({ displayData }) => {
   //   setSelectedSubject(value);
 
   // };
+  const { user } = useUser()
+
+  const addLogs = async (message) => {
+    const email = user.email;
+    try {
+      const formdata = {
+        transaction: message, // Corrected parameter usage
+        user: email
+      };
+      const response = await add('/save-logs', formdata);
+      console.log(response);
+    } catch (error) {
+      console.error("Error occurred while making request:", error);
+    }
+  };
+  
+
   const onSubmit = async (data) => {
     const formData = {
       academicRecords: {
@@ -104,6 +123,8 @@ const TeacherAcademic = ({ displayData }) => {
             'colored',
             'success'
           );
+          
+          addLogs(`A teacher account has added new section with ID number ${modalData}`)
           displayData();
       }
 

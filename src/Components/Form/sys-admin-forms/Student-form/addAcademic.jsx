@@ -3,12 +3,12 @@ import { Stack, Chip } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import CancelIcon from "@mui/icons-material/Cancel";
-import axios from 'axios';
+import { useUser } from '../../../../utils/context/userContext';
 
 import {
   fetchData,
   AcreateData,
+  add
 } from '../../../../utils/api';
 
 import BasicSelectField from '../../../TextFielld/SelectTextfield';
@@ -46,6 +46,8 @@ const AddAcademics = ({ displayData }) => {
     // semester: requiredString('Please select a semester'),
   });
 
+  const { user } = useUser()
+
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(academicSchema),
   });
@@ -70,6 +72,21 @@ const AddAcademics = ({ displayData }) => {
   //   setSelectedSubject(value);
 
   // };
+
+  const addLogs = async (message) => {
+
+    const email = user.email
+    try {
+      const formdata = {
+        transaction: message,
+        user: email
+      };
+      const response = await add('/save-logs', formdata);
+      console.log(response);
+    } catch (error) {
+      console.error("Error occurred while making request:", error);
+    }
+  };
 
   const onSubmit = async (data) => {
     const formData = {
@@ -105,6 +122,7 @@ const AddAcademics = ({ displayData }) => {
             'colored',
             'success'
           );
+          addLogs(`A student account has been add new section with ID number ${modalData}`)
           displayData();
       }
 

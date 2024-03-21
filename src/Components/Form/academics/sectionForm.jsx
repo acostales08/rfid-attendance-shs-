@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import ControlledTextField from '../../TextFielld/TextField'
 import ControlledButton from '../../Button/Buttton'
-import { createData, updateData  } from '../../../utils/api'
+import { createData, updateData, add } from '../../../utils/api'
 import { useCrudModal } from '../../../utils/context/crudModalContext';
 import { useToastMessege } from '../../../utils/context/toastContext';
 import { Stack } from '@mui/material'
@@ -9,6 +9,7 @@ import { z } from 'zod'
 import requiredString from '../../../utils/Schema/formSchema'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useUser } from '../../../utils/context/userContext';
 
 const SectionForm = ({displayData, modalData: propModalData}) => {
 
@@ -33,6 +34,23 @@ const SectionForm = ({displayData, modalData: propModalData}) => {
       }
     }, [propModalData]);
   
+    const { user } = useUser()
+
+    const addLogs = async (message) => {
+      const email = user.email;
+      try {
+        const formdata = {
+          transaction: message, // Corrected parameter usage
+          user: email
+        };
+        const response = await add('/save-logs', formdata);
+        console.log(response);
+      } catch (error) {
+        console.error("Error occurred while making request:", error);
+      }
+    };
+    
+
     const onSubmit = async (data, e) => {
       e.preventDefault();
     
@@ -56,6 +74,8 @@ const SectionForm = ({displayData, modalData: propModalData}) => {
          "colored",
          messege? "success" : "warning"
      )
+
+     addLogs('update section')
      } else {
        const response = await createData("/save", formData);
        const messege = response.data.status === "CREATED"
@@ -71,6 +91,7 @@ const SectionForm = ({displayData, modalData: propModalData}) => {
                    messege? "success" : "warning"
                )
      }
+     addLogs('create new section')
      closeModal();
      displayData();
       closeModal();

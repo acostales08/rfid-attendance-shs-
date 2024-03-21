@@ -3,8 +3,7 @@ import { Stack, Chip } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import CancelIcon from "@mui/icons-material/Cancel";
-import axios from 'axios';
+import { useUser } from '../../../../utils/context/userContext';
 
 import {
   fetchData,
@@ -30,6 +29,7 @@ const AcademicsForm = ({ displayData }) => {
   const [section, setSection] = useState([]);
   const [yearLevel, setYearLevel] = useState([]);
 
+  const { user } = useUser()
 
   const academicSchema = z.object({
     course: requiredString('Please select a course'),
@@ -94,27 +94,21 @@ const AcademicsForm = ({ displayData }) => {
   //   setSelectedSubject(value);
 
   // };
-  const addLogs = async () => {
+
+  const addLogs = async (message) => {
+    const email = user.email;
     try {
-      // Retrieve userData from localStorage
-      const userDataString = localStorage.getItem('userData');
-      // Parse the string back to an object
-      const userData = JSON.parse(userDataString);
-      
-      // Extract email from userData
-      const email = userData.email;
-  
       const formdata = {
-        transaction: `A student account has been created with ID number ${userData.studentNo}`,
+        transaction: message, // Corrected parameter usage
         user: email
       };
-  
       const response = await add('/save-logs', formdata);
       console.log(response);
     } catch (error) {
       console.error("Error occurred while making request:", error);
     }
   };
+  
   
   
   const onSubmit = async (data, e) => {
@@ -147,6 +141,7 @@ const AcademicsForm = ({ displayData }) => {
           'success'
         );
 
+        addLogs(`A student account has been updated with ID number ${userData.studentNo}`)
         submitData()
         displayData();
         closeModal();
@@ -192,7 +187,8 @@ const AcademicsForm = ({ displayData }) => {
           'colored',
           messege === 'Request invalid.' ? 'warning' : 'success'
         );
-        addLogs()
+        
+        addLogs(`A student account has been created with ID number ${userData.studentNo}`)
         submitData()
         displayData();
         closeModal();

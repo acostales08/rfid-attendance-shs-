@@ -6,9 +6,10 @@ import ControlledTextField from '../../TextFielld/TextField';
 import ControlledButton from '../../Button/Buttton';
 import { useCrudModal } from '../../../utils/context/crudModalContext';
 import { useToastMessege } from '../../../utils/context/toastContext';
-import { createData, updateData  } from '../../../utils/api'
+import { createData, updateData, add  } from '../../../utils/api'
 import requiredString from '../../../utils/Schema/formSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useUser } from '../../../utils/context/userContext';
 
 const CourseForm = ({ displayData, modalData: propModalData }) => {
   const { closeModal } = useCrudModal();
@@ -35,6 +36,24 @@ const CourseForm = ({ displayData, modalData: propModalData }) => {
     }
   }, [propModalData, setValue]);
 
+
+  const { user } = useUser()
+
+  const addLogs = async (message) => {
+    const email = user.email;
+    try {
+      const formdata = {
+        transaction: message, // Corrected parameter usage
+        user: email
+      };
+      const response = await add('/save-logs', formdata);
+      console.log(response);
+    } catch (error) {
+      console.error("Error occurred while making request:", error);
+    }
+  };
+  
+  
   const onSubmit = async (data, e) => {
     e.preventDefault();
 
@@ -65,6 +84,7 @@ const CourseForm = ({ displayData, modalData: propModalData }) => {
             'colored',
             dataChanged ? 'success' : 'info'
           );
+          addLogs('update course')
         } else {
           ToastMessege(
             'Update Failed',
@@ -100,7 +120,7 @@ const CourseForm = ({ displayData, modalData: propModalData }) => {
         message === 'Added Successfully' ? 'success' : 'error'
       );
     }
-
+    addLogs("create new course")
     closeModal();
     displayData();
   };

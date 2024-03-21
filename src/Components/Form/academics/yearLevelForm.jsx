@@ -8,7 +8,8 @@ import { useCrudModal } from '../../../utils/context/crudModalContext'
 import { useToastMessege } from '../../../utils/context/toastContext';
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createData, updateData } from '../../../utils/api'
+import { createData, updateData, add } from '../../../utils/api'
+import { useUser } from '../../../utils/context/userContext'
 
 const YearLevelForm = ({displayData, modalData: propModalData}) => {
 
@@ -33,6 +34,22 @@ const YearLevelForm = ({displayData, modalData: propModalData}) => {
         }
     }, [propModalData])
 
+    const { user } = useUser()
+    
+    const addLogs = async (message) => {
+        const email = user.email;
+        try {
+          const formdata = {
+            transaction: message, // Corrected parameter usage
+            user: email
+          };
+          const response = await add('/save-logs', formdata);
+          console.log(response);
+        } catch (error) {
+          console.error("Error occurred while making request:", error);
+        }
+      };
+      
 
     const onSubmit = async (data, e) => {
         e.preventDefault()
@@ -44,6 +61,8 @@ const YearLevelForm = ({displayData, modalData: propModalData}) => {
         }
         if (propModalData) {
             const response = await updateData("/update", formData);
+
+            addLogs('update year level')
 
          } else {
            const response = await createData("/save", formData);
@@ -60,6 +79,7 @@ const YearLevelForm = ({displayData, modalData: propModalData}) => {
                        message? "success" : "warning"
                    )
          }
+         addLogs('create new year level')
          closeModal();
          displayData();
         closeModal()
