@@ -92,16 +92,22 @@ const TeacherInfo = () => {
         e.preventDefault();
       if(modalData){
         const formDatas ={
-            existid: modalData?.[0].id,
-            teacherid: data.employeeId,
-            firstname: data.firstName,
-            middlename: data.middleName,
-            lastname: data.lastName,
-            street: data.street,
-            brgy: data.barangay,
-            city: data.city,
-            zcode: data.zipCode,
-            emailadd: data.email,
+            id: modalData?.[0].id,
+            employeeId: data.employeeId,
+            firstName: data.firstName,
+            middleName: data.middleName,
+            lastName: data.lastName,
+            address: {
+                street: data.street,
+                barangay: data.barangay,
+                city: data.city,
+                zip_code: data.zipCode,
+            },
+            credentials: {
+                email: data.email,
+                ...(modalData === null && { password: data.password }),
+                userType: "teacher"
+            },
             
         }
         console.log(formDatas)

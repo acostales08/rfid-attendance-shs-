@@ -14,14 +14,6 @@ import MultipleSelectCheckmarks from '../../../TextFielld/MultipleSelect';
 import { useUser } from '../../../../utils/context/userContext';
 
 
-const section = [
-  {id: 1, classes: "BSIS 2-1"},
-  {id: 2, classes: "BSIS 2-2"},
-  {id: 3, classes: "BSIS 2-3"},
-  {id: 4, classes: "BSIS 2-4"},
-  {id: 5, classes: "BSIS 2-5"},
-]
-
 const AcademicsForm = ({ displayData }) => {
   const { ToastMessege } = useToastMessege();
   const { userData, submitData, setUserData } = useStepper();
@@ -29,8 +21,6 @@ const AcademicsForm = ({ displayData }) => {
   const [sections, setSections] = useState([]);
   const [ selectedSection, setSelectedSections ] = useState([])
   const [ teachSection, setTeachSection ] = useState([])
-
-
 
   const { user } = useUser()
 
@@ -82,9 +72,6 @@ const AcademicsForm = ({ displayData }) => {
         displayClasses()
     }, [])
 
-    const sectioninfo = sections?.[0]
-    console.log(sectioninfo)
-
 
     const displaySelectClass = async() => {
       const response = await fetchSection('/displayClasses')
@@ -134,17 +121,20 @@ const AcademicsForm = ({ displayData }) => {
 
     if (modalData) {
       const formDatas = {
-        ...modalData?.[0],
+        ...userData,
         classesModels: selectedSection.map(section => ({
             empId: userData.employeeId,
             classes: section,
             isCurrent: '1',
           })),
       };
+
+      console.log(formDatas)
       try {
         const response = await updateData('/updateTeacherAccount', formDatas)
         const result = response.data
-        if(result === "updated"){
+        console.log(result)
+        if(result === "Updated"){
           ToastMessege(
             "update successfully",
             'top-right',
@@ -156,6 +146,10 @@ const AcademicsForm = ({ displayData }) => {
             'colored',
             'success'
           );
+          addLogs(`A Teacher account has been updated with ID number ${userData.employeeId}`);
+          submitData();
+          displayData();
+          closeModal();   
 
         }
       } catch (error) {

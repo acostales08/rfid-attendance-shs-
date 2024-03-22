@@ -74,6 +74,8 @@ const StudentInfoForm = () => {
               setValue("password", "sample");
           }
       }, [studentinfo, setValue]);
+
+      console.log(modalData?.[0].credentials.id)
       
       const onSubmit = async (data, e) => {
         e.preventDefault();
@@ -86,12 +88,14 @@ const StudentInfoForm = () => {
                 middleName: data.middleName,
                 lastName: data.lastName,
                 address: {
+                    id: modalData?.[0].address.id,
                   street: data.street,
                   barangay: data.barangay,
                   city: data.city,
                   zip_code: data.zipCode,
                 },
                 credentials: {
+                    id:modalData?.[0].credentials.id,
                   email: data.email,
                   ...(modalData === null && { password: data.password }),
                   userType: "student"

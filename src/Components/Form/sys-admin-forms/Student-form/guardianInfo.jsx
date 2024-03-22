@@ -37,12 +37,6 @@ const GuardianInfo = () => {
         formState: { errors },
       } = useForm({
         resolver: zodResolver(studentSchema),
-        defaultValues: {
-            parentFirstName: userData.parentFirstName || '',
-            parentMiddleName: userData.parentMiddleName || '',
-            parentLastName: userData.parentLastName || '',
-            parentPhoneNo: userData.parentPhoneNo || '',
-          },
       });
 
       const Pnum = watch('parentPhoneNo')
@@ -50,15 +44,24 @@ const GuardianInfo = () => {
         setPhoneNumExist(false);
       }, [Pnum]);
 
+      console.log(modalData?.[0])
+
       const studentinfo = modalData?.[0];
+
       useEffect(() => {
-          if (studentinfo) {
+        if (studentinfo) {
             setValue("parentFirstName", studentinfo.parentFirstName || "");
             setValue("parentMiddleName", studentinfo.parentMiddleName || "");
             setValue("parentLastName", studentinfo.parentLastName || "");
             setValue("parentPhoneNo", studentinfo.parentPhoneNo || "");
-          }
-      }, [studentinfo, setValue]);
+        } else {
+            setValue("parentFirstName", userData.parentFirstName || "");
+            setValue("parentMiddleName", userData.parentMiddleName || "");
+            setValue("parentLastName", userData.parentLastName || "");
+            setValue("parentPhoneNo", userData.parentPhoneNo || "");
+        }
+    }, [studentinfo, setValue, userData]);
+    
 
     const onSubmit = (data, e ) => {
         e.preventDefault()
@@ -66,11 +69,13 @@ const GuardianInfo = () => {
         if(modalData){
             const formDatas = {
                 ...userData,
-                parentfirstname: data.parentFirstName,
-                parentmiddlename: data.parentMiddleName,
-                parentlastname: data.parentLastName,
-                parentphoneno: data.parentPhoneNo,
+                parentfirstname: "sample",
+                parentmiddlename: 'parentMiddleName',
+                parentlastname: 'parentLastName',
+                parentphoneno: 'parentPhoneNo',
             }
+            console.log(data.parentfirstname)
+            console.log(formDatas)
             setUserData(formDatas)
             handleNext()
         }else{

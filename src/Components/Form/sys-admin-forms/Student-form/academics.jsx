@@ -9,6 +9,7 @@ import {
   fetchSection,
   createData,
   AcreateData,
+  updateData,
   add
 } from '../../../../utils/api';
 
@@ -37,6 +38,7 @@ const AcademicsForm = ({ displayData }) => {
   const { control, handleSubmit, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(academicSchema),
   });
+
 
   const date = new Date();
   const schoolYear = date.getFullYear();
@@ -68,9 +70,10 @@ const AcademicsForm = ({ displayData }) => {
     }
   }, [sectioninfo, setValue]);
 
+  console.log(userData)
 
   const displayS = async() => {
-    const response = await fetchSection(`/displayAcadsTeacher?empId=${modalData?.[0].studentNo}`)
+    const response = await fetchSection(`/displayAcadsTeacher?empId=${userData.studentNo}`)
     const result = response.data
     setSections(result)
   }
@@ -85,11 +88,11 @@ const AcademicsForm = ({ displayData }) => {
       }
   }
   
-  const onSubmit = async (data, e) => {
+  const onSubmit = async(data, e) => {
     e.preventDefault()
     if(modalData){
       const formDatas = {
-        ...modalData?.[0],
+        ...userData,
         // imageurl: "sampleimage01.png",
           classesModels:{
             id: sections?.[0].id,
@@ -101,8 +104,9 @@ const AcademicsForm = ({ displayData }) => {
       setUserData(formDatas);
       console.log(formDatas)
       try {
-        const response = await AcreateData('/updateStudentAccount', formDatas)
+        const response = await updateData('/updateStudentAccount', formDatas)
         const message = response.data
+        console.log(response)
         if(message === 'Created successfully.'){
         ToastMessege(
           "Created successfully.",
@@ -189,8 +193,7 @@ const AcademicsForm = ({ displayData }) => {
               />
           </Stack>
         </Stack>
-        <div className="flex my-5 justify-between">
-          <div className="flex justify-end gap-4">
+        <div className="flex justify-end gap-4 mt-4">
             <ControlledButton
               name="submitButton"
               text="Submit"
@@ -207,8 +210,6 @@ const AcademicsForm = ({ displayData }) => {
               onClick={closeModal}
             />            
           </div>
-
-        </div>
       </form>
     </div>
   );
