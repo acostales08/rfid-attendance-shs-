@@ -3,10 +3,15 @@ import { Paper, TextField } from '@mui/material';
 import { ControlledDataTable } from '../../Components';
 import { fetchAttendance } from '../../utils/api';
 
+const currentDate = new Date();
+
+const philippineDate = new Date(currentDate.getTime() + (8 * 60 * 60 * 1000));
+const formattedDate = philippineDate.toISOString().split('T')[0];
+
 const ViewAttendance = () => {
   const [attendance, setAttendance] = useState([]);
-  const [fromDate, setFromDate] = useState(null);
-  const [toDate, setToDate] = useState(null);
+  const [fromDate, setFromDate] = useState(formattedDate);
+  const [toDate, setToDate] = useState(formattedDate);
 
   const onFilter = (data, search) =>
     data.filter((item) => {
@@ -67,7 +72,7 @@ const ViewAttendance = () => {
     },
     {
       name: 'Section',
-      selector: (row) => `${row.course} ${row.yearLevel}-${row.section}`,
+      selector: (row) => row.classes,
       sortable: true,
     },
     {

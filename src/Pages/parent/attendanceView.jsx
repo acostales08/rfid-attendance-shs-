@@ -1,13 +1,38 @@
 import React, {useEffect, useState} from 'react'
-import { Paper, TextField } from '@mui/material';
+import { Paper, TextField, MenuItem } from '@mui/material';
 import { ControlledDataTable } from '../../Components';
-import { fetchAttendance } from '../../utils/api';
+import { fetchAttendance, selectName } from '../../utils/api';
+import { useUser } from '../../utils/context/userContext';
+import axios from 'axios';
+
+const currentDate = new Date();
+
+const philippineDate = new Date(currentDate.getTime() + (8 * 60 * 60 * 1000));
+const formattedDate = philippineDate.toISOString().split('T')[0];
 
 const ParentAttendanceViewPage = () => {
-
+  const [nameValue, setNameValue] = useState('');
   const [attendance, setAttendance] = useState([])
-  const [fromDate, setFromdate] = useState(null)
-  const [toDate, setToDate] = useState(null)
+  const [fromDate, setFromdate] = useState(formattedDate)
+  const [toDate, setToDate] = useState(formattedDate)
+  const [childname, setChildname ] = useState([])
+
+
+  const { user } = useUser()
+
+  useEffect(() => {
+    display()
+  }, [])
+
+  const display = async() => {
+      try {
+        const response = await selectName(`/displayParentChild?email=${user.email}`)
+        const res = response.data
+        setChildname(res)
+      } catch (error) {
+        
+      }
+  }
 
   const onFilter = (data, search) =>
   data.filter((item) => {
@@ -36,13 +61,11 @@ const fetch = async() => {
   const formattedFromDate = fromDate ? new Date(fromDate).toISOString().split('T')[0] : '';
   const formattedToDate = toDate ? new Date(toDate).toISOString().split('T')[0] : '';
 
-    const result = await fetchAttendance(
-      `/display-attendance-parent?email=${email}$fromDate=${formattedFromDate}&toDate=${formattedToDate}`
-      );
+  const result = await fetchAttendance(`/display-attendance?fromDate=${formattedFromDate}&toDate=${formattedToDate}`);
 
       const filteredAttendance = result.data.filter((record) => {
         const recordDate = new Date(record.createdAt).toISOString().split('T')[0];
-        return recordDate >= formattedFromDate && recordDate <= formattedToDate;
+        return recordDate >= formattedFromDate && recordDate <= formattedToDate && record.studentNo === nameValue;
       })
     setAttendance(filteredAttendance)
 
@@ -69,7 +92,7 @@ const columns = [
   },
   {
     name: 'Section',
-    selector: (row) => `${row.course} ${row.yearLevel}-${row.section}`,
+    selector: (row) => row.classes,
     sortable: true,
   },
       { 
@@ -166,6 +189,31 @@ return (
           pagination
           onFilter={onFilter}
           defaultSearchValue=""
+          children={
+            <div className='w-[200px]'>
+              <TextField
+                select
+                label="Names"
+                value={nameValue}
+                fullWidth
+                onChange={e => setNameValue(e.target.value)}
+                size="small"
+                className="w-full"
+                InputProps={{
+                  classes: {
+                    root: 'h-10', 
+                    input: 'h-full'
+                  }
+                }}
+              >
+                {childname.map((item, index) => (
+                  <MenuItem key={index} value={item.studentno}>
+                    {item.fullname}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </div>
+          }
         />        
     </Paper>
 

@@ -36,6 +36,11 @@ export const parentCreateAcc = async (endPoint, data) => {
     return response;
 }
 
+export const selectName = async (endPoint) => {
+    const response = await axios.get(`${baseUrl}/parent/v1/api${endPoint}`)
+    return response
+}
+
 export const AcreateData = async (endPoint, data) => {
     const response = await axios.post(`${baseUrl}/academicRecords/v1/api${endPoint}`, data)
     return response;
@@ -86,4 +91,14 @@ export const add = (endPoint, data) => {
 export const displayAdmin = (endPoint) => {
     const result = axios.get(`${baseUrl}/admin/v1/api${endPoint}`)
     return result
+}
+
+export const addClasses = (endPoint, data) => {
+    const result = axios.post(`${baseUrl}/api/v1/classes${endPoint}`, data)
+    return result;
+}
+
+export const displayClasses = (endPoint, data) => {
+    const result = axios.get(`${baseUrl}/api/v1/classes${endPoint}`)
+    return result;
 }

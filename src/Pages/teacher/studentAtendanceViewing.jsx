@@ -4,11 +4,16 @@ import { ControlledDataTable } from '../../Components';
 import useCount from '../../utils/hooks/useCount';
 import { fetchSection } from '../../utils/api';
 
+const currentDate = new Date();
+
+const philippineDate = new Date(currentDate.getTime() + (8 * 60 * 60 * 1000));
+const formattedDate = philippineDate.toISOString().split('T')[0];
+
 const StudentAttendanceViewing = () => {
   const [sectionValue, setSectionValue] = useState('');
-  const [fromDate, setFromDate] = useState(null);
-  const [toDate, setToDate] = useState(null);
-  const [section, setSection] = useState([])
+  const [fromDate, setFromDate] = useState(formattedDate);
+  const [toDate, setToDate] = useState(formattedDate);
+  const [sectionList, setSectionList] = useState([])
   const { attendance } = useCount();
 
   const result = localStorage.getItem('userData');
@@ -17,17 +22,23 @@ const StudentAttendanceViewing = () => {
 
 
   useEffect(() => {
-    sectionfunc()
+    // sectionfunc()
+    displayClasses()
   }, [])
 
-  const sectionfunc = async() => {
-    try {
-      const studentSection = await fetchSection(`/teacher-acads?employeeId=${employeeId}`)
-      setSection(studentSection.data)      
-    } catch (error) {
-      console.error('Error', error);
-    }
+  // const sectionfunc = async() => {
+  //   try {
+  //     const studentSection = await fetchSection(`/teacher-acads?employeeId=${employeeId}`)
+  //     setSection(studentSection.data)      
+  //   } catch (error) {
+  //     console.error('Error', error);
+  //   }
 
+  // }
+
+  const displayClasses = async() => {
+    const response = await fetchSection(`/displayAcadsTeacher?empId=${employeeId}`)
+    setSectionList(response.data)
   }
   
 
@@ -40,13 +51,15 @@ const StudentAttendanceViewing = () => {
     });
   };
 
+
+
   const fetchPerSectionAndDate = attendance.filter(item => {
     const itemDate = new Date(item.createdAt);
     const fromDateObj = fromDate ? new Date(fromDate) : null;
     const toDateObj = toDate ? new Date(toDate) : null;
 
     const withinDateRange = (!fromDateObj || itemDate >= fromDateObj) && (!toDateObj || itemDate <= toDateObj);
-    return section === sectionValue && withinDateRange;
+     return withinDateRange && item.classes === sectionValue;
   });
 
   const NumberedCell = ({ rowIndex }) => <div>{rowIndex}</div>;
@@ -75,7 +88,7 @@ const StudentAttendanceViewing = () => {
     },
     {
       name: 'Section',
-      selector: row => `${row.course} ${row.yearLevel}-${row.section}`,
+      selector: row => row.classes,
       sortable: true,
       center: true,
       width: '200px'
@@ -154,9 +167,9 @@ const StudentAttendanceViewing = () => {
                   }
                 }}
               >
-                {section.map((item, index) => (
-                  <MenuItem key={index} value={item.name}>
-                    {item.name}
+                {sectionList.map((item, index) => (
+                  <MenuItem key={index} value={item.classes}>
+                    {item.classes}
                   </MenuItem>
                 ))}
               </TextField>

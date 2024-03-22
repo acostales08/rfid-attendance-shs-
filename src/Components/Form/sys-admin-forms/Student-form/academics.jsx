@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useUser } from '../../../../utils/context/userContext';
 
 import {
-  fetchData,
+  fetchSection,
   createData,
   AcreateData,
   add
@@ -22,20 +22,16 @@ import requiredString from '../../../../utils/Schema/formSchema';
 
 
 const AcademicsForm = ({ displayData }) => {
+  const [ sections, setSections ] = useState([])
+  const [ selectSection, setSelectSection ] = useState([])
   const { ToastMessege } = useToastMessege();
   const { handleBack, currentStep, userData, submitData, setUserData } = useStepper();
   const { closeModal, modalData } = useCrudModal();
-  const [course, setCourse] = useState([]);
-  const [section, setSection] = useState([]);
-  const [yearLevel, setYearLevel] = useState([]);
 
   const { user } = useUser()
 
   const academicSchema = z.object({
-    course: requiredString('Please select a course'),
-    section: requiredString('Please select a section'),
-    year_level: requiredString('Please select a year level'),
-    // semester: requiredString('Please select a semester'),
+    section: requiredString('Please Select Section'),
   });
 
   const { control, handleSubmit, setValue, formState: { errors } } = useForm({
@@ -45,61 +41,11 @@ const AcademicsForm = ({ displayData }) => {
   const date = new Date();
   const schoolYear = date.getFullYear();
 
-  const courseInfo = modalData?.courseinfo?.[0]?.courseName;
-  const courseId = course.find(sample => sample.name === courseInfo);
-  const semesterID = modalData?.courseinfo?.[0]?.semester;
-  const yearLevelID = modalData?.courseinfo?.[0]?.yearLevel;
-  const sectionfind = modalData?.studSection?.[0]?.section;
-  const sectionID = section.find(sample => sample.name === sectionfind);
-  const subjectinfo = modalData?.studSubject?.map(item => item.name) || [];
-//   const subjectIds = subjectinfo.map(subjectName => {
-//     const foundSubject = subject.find(sample => sample.name === subjectName);
-//     return foundSubject ? foundSubject.id : null;
-// });
-
-// const isSubjectIdsNotNull = subjectIds.some(id => id !== null);
-
-  
-  useEffect(() => {
-    if (courseId && sectionID && yearLevelID ) {
-      setValue("course", String(courseId.id) || "");
-      setValue("section", String(sectionID.id) || "");
-      // setValue("semester", String(semesterID) || "");
-      setValue("yearLevel", String(yearLevelID) || "");
-      // setValue("subject", String(subjectIds) || "");
-
-    }
-  }, [courseId, sectionID, yearLevelID, setValue]);
-
-  // useEffect(() => {
-  //     if(isSubjectIdsNotNull){
-  //       setSelectedSubject(subjectIds)
-  //     }
-  // }, [isSubjectIdsNotNull]);
-
-  // const getSelectedNames = () => {
-  //   if(selectedSubject.length > 0){
-  //     return selectedSubject.map(id => {
-  //       const selectedOption = subject.find(option => option.id === id);
-  //       return selectedOption ? selectedOption.name : '';
-  //     });    
-  //   }
-
-  // };
-
-  // const handleChange = (event) => {
-  //   const {
-  //     target: { value },
-  //   } = event;
-  //   setSelectedSubject(value);
-
-  // };
-
   const addLogs = async (message) => {
     const email = user.email;
     try {
       const formdata = {
-        transaction: message, // Corrected parameter usage
+        transaction: message, 
         user: email
       };
       const response = await add('/save-logs', formdata);
@@ -108,29 +54,58 @@ const AcademicsForm = ({ displayData }) => {
       console.error("Error occurred while making request:", error);
     }
   };
-  
-  
+
+  useEffect(() => {
+    displaySection()
+    displayS()
+  }, [])
+
+  const sectioninfo = sections?.[0];
+
+  useEffect(() => {
+    if (sectioninfo) {
+      setValue("section", sectioninfo.classes);
+    }
+  }, [sectioninfo, setValue]);
+
+
+  const displayS = async() => {
+    const response = await fetchSection(`/displayAcadsTeacher?empId=${modalData?.[0].studentNo}`)
+    const result = response.data
+    setSections(result)
+  }
+
+  const displaySection = async() => {
+      try {
+      const  response = await fetchSection('/displayClasses')
+      const result = response.data
+      setSelectSection(result)
+      } catch (error) {
+        console.error("error fetching sections")
+      }
+  }
   
   const onSubmit = async (data, e) => {
     e.preventDefault()
     if(modalData){
       const formDatas = {
-        ...userData,
-        courseid: parseInt(data.course),
-        sectionid: parseInt(data.section),
-        yl: parseInt(data.year_level),
-        sy: schoolYear,
-        // sem: parseInt(data.semester)
-        // managedsubject: selectedSubject.map(subjectId => ({
-        //   subject: parseInt(subjectId),
-        // })),
+        ...modalData?.[0],
+        // imageurl: "sampleimage01.png",
+          classesModels:{
+            id: sections?.[0].id,
+            empId: userData.studentNo,
+            classes: data.section,
+            isCurrent: 1
+          }
       }
       setUserData(formDatas);
+      console.log(formDatas)
       try {
-        const response = await AcreateData('/update-student-info', formDatas)
+        const response = await AcreateData('/updateStudentAccount', formDatas)
         const message = response.data
+        if(message === 'Created successfully.'){
         ToastMessege(
-          "Updated Successfully",
+          "Created successfully.",
           'top-right',
           false,
           true,
@@ -144,7 +119,9 @@ const AcademicsForm = ({ displayData }) => {
         addLogs(`A student account has been updated with ID number ${userData.studentNo}`)
         submitData()
         displayData();
-        closeModal();
+        closeModal();          
+        }
+
       } catch (error) {
         console.error('Error submitting data:', error);
       }
@@ -152,24 +129,15 @@ const AcademicsForm = ({ displayData }) => {
     }else{
       const formData = {
         ...userData,
-        academicRecords: {
-          studentNo: userData.studentNo,
-          course: parseInt(data.course),
-          section: parseInt(data.section),
-          yearLevel: parseInt(data.year_level),
-          schoolYear: schoolYear,
-          // semester: parseInt(data.semester),
-          userType: 'student', 
-          isCurrent: 1,
+        imageurl: "sampleimage01.png",
+        classesModels: {
+          empId: userData.studentNo,
+          classes: data.section ,
+          isCurrent: 1
         },
-        // subject: selectedSubject.map(subjectId => ({
-        //   studentNo: userData.studentNo,
-        //   manageSubject: parseInt(subjectId),
-        //   userType: 'student',
-        //   isCurrent: '1',
-        // })),
       };
       setUserData(formData);
+      console.log(formData)
       try {
         const response = await createData('/createStudentAccount', formData);
         const messege = response.data === 'Request invalid.'
@@ -196,117 +164,50 @@ const AcademicsForm = ({ displayData }) => {
         console.error('Error submitting data:', error);
       }      
     }
-
-
   };
 
-  useEffect(() => {
-    fetchDataAndSetState('course', setCourse);
-    fetchDataAndSetState('section', setSection);
-    fetchDataAndSetState('yearLevel', setYearLevel);
-  }, []);
-
-  const fetchDataAndSetState = async (type, setState) => {
-    const data = await fetchData(type);
-    setState(data);
-  };
 
   return (
     <div className="h-full w-full p-1">
+      <div className="h-[40vh] w-full mb-10">
+        <div className="border h-full w-full p-4">
+            <img src="" alt="" />
+        </div>
+      </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={2}>
-        <Stack direction="row" spacing={1}>
-            <BasicSelectField
-              label="Select Strand"
-              name="course"
-              control={control}
-              error={!!errors.course}
-              helperText={errors.course?.message}
-              size="small"
-              options={course}
-              value={courseId || ''} 
-            />
-            <BasicSelectField
-              label="Select section"
-              name="section"
-              control={control}
-              error={!!errors.section}
-              helperText={errors.section?.message}
-              size="small"
-              options={section}
-              value={sectionID || ''} 
-            />
-          </Stack>
           <Stack direction="row" spacing={1}>
-            <BasicSelectField
-              label="Select year level"
-              name="year_level"
-              control={control}
-              error={!!errors.year_level}
-              helperText={errors.year_level?.message}
-              size="small"
-              options={yearLevel}
-              value={yearLevelID || ''}
-            />
-            {/* <BasicSelectField
-              label="Select semester"
-              name="semester"
-              control={control}
-              error={!!errors.semester}
-              helperText={errors.semester?.message}
-              size="small"
-              options={semester}
-              value={semesterID || ''} 
-            /> */}
+              <BasicSelectField
+                label="Select Section"
+                name="section"
+                control={control}
+                error={!!errors.section}
+                helperText={errors.section?.message}
+                size="small"
+                options={selectSection}
+                value=""
+              />
           </Stack>
-          {/* <MultipleSelectCheckmarks
-            label="Select Subject"
-            name="subject"
-            items={subject}
-            onChange={handleChange}
-            value={selectedSubject}
-            selectedNames={selectedSubject}
-            renderValue={() => (
-              <Stack gap={1} direction="row" flexWrap="wrap">
-                {getSelectedNames().map((name, index) => (
-                  <Chip
-                  key={index}
-                  label={name}
-                  onDelete={() => {
-                    const filteredIds = selectedSubject.filter((_, idx) => idx !== index);
-                    setSelectedSubject(filteredIds);
-                  }}
-                  deleteIcon={<CancelIcon onMouseDown={(event) => event.stopPropagation()} />}
-                />
-                ))}
-              </Stack>
-            )}
-          /> */}
         </Stack>
+        <div className="flex my-5 justify-between">
+          <div className="flex justify-end gap-4">
+            <ControlledButton
+              name="submitButton"
+              text="Submit"
+              variant="contained"
+              size="small"
+              type="submit"
+              color="primary"
+            />
+            <ControlledButton
+              text="Cancel"
+              variant="outlined"
+              size="small"
+              color="primary"
+              onClick={closeModal}
+            />            
+          </div>
 
-        <div className="flex my-5 justify-end gap-4">
-          <ControlledButton
-            text="Back"
-            variant="contained"
-            size="small"
-            onClick={handleBack}
-            disabled={currentStep === 1}
-            color="error"
-          />
-          <ControlledButton
-            text="Submit"
-            variant="contained"
-            size="small"
-            type="submit"
-            color="primary"
-          />
-          <ControlledButton
-            text="Cancel"
-            variant="outlined"
-            size="small"
-            color="primary"
-            onClick={closeModal}
-          />
         </div>
       </form>
     </div>

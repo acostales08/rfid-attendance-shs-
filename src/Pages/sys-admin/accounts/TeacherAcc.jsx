@@ -17,27 +17,15 @@ const StudentAcc = () => {
   };
 
   const handleOpenViewModal = async(data) => {
-    const tData = {
-      employeeId: data
-    }
 
-    const resultinfo = await createData('/teacher-info', tData)
-    const resultCourse = await createData('/teacher-course', tData)
-    const resultSection = await createData('/teacher-section', tData)
-
-    const teacherinfo = {
-       teacher: resultinfo.data,
-       courseinfo : resultCourse.data,
-       sectioninfo: resultSection.data,
-    }
-    console.log(teacherinfo)
+    const teacherinfo = teacher.filter(item => item.employeeId === data)
     
     openModal(teacherinfo, "View");
   };
 
-  const handleOpenEditModal = (data) => {
-    openModal(data, "Add");
-  };
+  // const handleOpenEditModal = (data) => {
+  //   openModal(data, "Add");
+  // };
   
   const renderForm = (operationType) => {
     switch(operationType){
@@ -108,12 +96,12 @@ const StudentAcc = () => {
               onClick={() => handleOpenViewModal(row.employeeId)}
             />
           </IconButton>
-          <IconButton color="primary">
+          {/* <IconButton color="primary">
             <FaPlus    
               size={18}
               onClick={() => handleOpenEditModal(row.id)}
             />
-          </IconButton>
+          </IconButton> */}
         </div>
       ),
     },

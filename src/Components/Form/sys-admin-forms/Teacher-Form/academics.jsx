@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Stack } from '@mui/material';
+import { Stack, Chip } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,25 +9,35 @@ import { useStepper } from '../../../../utils/context/stepperContext';
 import { useCrudModal } from '../../../../utils/context/crudModalContext';
 import { useToastMessege } from '../../../../utils/context/toastContext';
 import requiredString from '../../../../utils/Schema/formSchema';
-import { fetchData, createData, add } from '../../../../utils/api';
-import BasicSelectField from '../../../TextFielld/SelectTextfield';
+import { fetchData, createData, add, fetchSection, updateData } from '../../../../utils/api';
+import MultipleSelectCheckmarks from '../../../TextFielld/MultipleSelect';
 import { useUser } from '../../../../utils/context/userContext';
+
+
+const section = [
+  {id: 1, classes: "BSIS 2-1"},
+  {id: 2, classes: "BSIS 2-2"},
+  {id: 3, classes: "BSIS 2-3"},
+  {id: 4, classes: "BSIS 2-4"},
+  {id: 5, classes: "BSIS 2-5"},
+]
 
 const AcademicsForm = ({ displayData }) => {
   const { ToastMessege } = useToastMessege();
   const { userData, submitData, setUserData } = useStepper();
   const { closeModal, modalData } = useCrudModal();
-  const [course, setCourse] = useState([]);
-  const [section, setSection] = useState([]);
-  const [yearLevel, setYearLevel] = useState([]);
-  const [academicRecordsRequest, setAcademicRecordsRequest] = useState([]);
+  const [sections, setSections] = useState([]);
+  const [ selectedSection, setSelectedSections ] = useState([])
+  const [ teachSection, setTeachSection ] = useState([])
+
+
 
   const { user } = useUser()
 
   const academicSchema = z.object({
-    // course: requiredString('Please select a course').optional(),
-    // section: requiredString('Please select a section').optional(),
-    // year_level: requiredString('Please select a year level').optional(),
+    course: requiredString('Please select a course').optional(),
+    section: requiredString('Please select a section').optional(),
+    year_level: requiredString('Please select a year level').optional(),
   });  
 
   const { control, handleSubmit, reset, formState: { errors }, trigger } = useForm({
@@ -36,111 +46,135 @@ const AcademicsForm = ({ displayData }) => {
 
   const date = new Date();
   const schoolYear = date.getFullYear();
+  const samplearr = teachSection.map(classes => {
+    return classes.classes
+  })
+  const isClassesIsNotNull = samplearr.some(classess => classess !== undefined)
 
-  const courseId = modalData?.courseinfo?.[0]?.courseName;
-  const sectionId = modalData?.sectioninfo?.[0]?.section;
-  const yearLevelId = modalData?.courseinfo?.[0]?.yearLevel;
+    useEffect(() => {
+      if(isClassesIsNotNull){
+        setSelectedSections(samplearr)
+      }
+  }, [isClassesIsNotNull]);
 
-  useEffect(() => {
-    fetchDataAndSetState('course', setCourse);
-    fetchDataAndSetState('section', setSection);
-    fetchDataAndSetState('yearLevel', setYearLevel)
-  }, []);
 
-  const fetchDataAndSetState = async (type, setState) => {
-    const data = await fetchData(type);
-    setState(data);
-  };
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const [sectionData, selectSectionData] = await Promise.all([
+            fetchSection('/displayAcadsTeacher', { empId: userData.employeeId }),
+            fetchSection('/displayClasses')
+          ]);
+    
+          setTeachSection(sectionData.data);
+          setSections(selectSectionData.data);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+          // Handle errors here, such as showing a notification to the user
+        }
+      };
+    
+      fetchData();
+    }, [userData.employeeId]);
 
-  const handleAddSection = async (data) => {
-    // Add new section to academicRecordsRequest
-    setAcademicRecordsRequest(prevState => [
-      ...prevState,
-      {
-        studentNo: userData.employeeId,
-        course: data.course,
-        section: data.section,
-        yearLevel: data.year_level,
-        schoolYear: schoolYear,
-        userType: "teacher",
-        isCurrent: 1
-      }
-    ]);
-  
-    // Reset the form after adding section
-    resetForm();
-  
-    // Success message
-    ToastMessege(
-      "Section successfully added",
-      'top-right',
-      false,
-      true,
-      true,
-      true,
-      undefined,
-      'colored',
-      'success'
-    );
-  };
-  
-  const resetForm = () => {
-    const resetValues = {};
-  
-    // Check if academicSchema and its shape property exist before accessing optional properties
-    if (academicSchema && academicSchema.shape) {
-      if (!academicSchema.shape.course || !academicSchema.shape.course.optional) {
-        resetValues.course = '';
-      }
-      if (!academicSchema.shape.section || !academicSchema.shape.section.optional) {
-        resetValues.section = '';
-      }
-      if (!academicSchema.shape.year_level || !academicSchema.shape.year_level.optional) {
-        resetValues.year_level = '';
-      }
+    useEffect(() => {
+        displaySelectClass()
+        displayClasses()
+    }, [])
+
+    const sectioninfo = sections?.[0]
+    console.log(sectioninfo)
+
+
+    const displaySelectClass = async() => {
+      const response = await fetchSection('/displayClasses')
+      setSections(response.data)
     }
-  
-    // Reset the form using the hook-form reset function
-    reset(resetValues);
-  };
-  
+
+    const displayClasses = async() => {
+      const response = await fetchSection(`/displayAcadsTeacher?empId=${userData.employeeId}`)
+      setTeachSection(response.data)
+    }
+
+    const getSelectedNames = () => {
+      if(selectedSection.length > 0){
+        return selectedSection.map(id => {
+          const selectedOption = sections.find(option => option.classes === id);
+
+          return selectedOption ? selectedOption.classes : '';
+        });    
+      }
+      return [];
+    };
+    
+
+    const handleChange = (event) => {
+      const {
+        target: { value },
+      } = event;
+      setSelectedSections(value);
+
+    };
+
   const addLogs = async (message) => {
     const email = user.email;
     try {
       const formdata = {
-        transaction: message, // Corrected parameter usage
+        transaction: message,
         user: email
       };
       const response = await add('/save-logs', formdata);
-      console.log(response);
     } catch (error) {
       console.error("Error occurred while making request:", error);
     }
   };
   
-
   const onSubmit = async (data, e) => {
     e.preventDefault();
+
     if (modalData) {
-      // Handle modal data
+      const formDatas = {
+        ...modalData?.[0],
+        classesModels: selectedSection.map(section => ({
+            empId: userData.employeeId,
+            classes: section,
+            isCurrent: '1',
+          })),
+      };
+      try {
+        const response = await updateData('/updateTeacherAccount', formDatas)
+        const result = response.data
+        if(result === "updated"){
+          ToastMessege(
+            "update successfully",
+            'top-right',
+            false,
+            true,
+            true,
+            true,
+            undefined,
+            'colored',
+            'success'
+          );
+
+        }
+      } catch (error) {
+        console.error("error updating teacher's account")
+      }
+        
     } else {
       const formData = {
         ...userData,
-        academicRecordsRequest
+        classesModels: selectedSection.map(section => ({
+            empId: userData.employeeId,
+            classes: section,
+            isCurrent: '1',
+          })),
       };
-    
-      // Check if the "Submit" button was clicked
-      const isSubmitButton = e.nativeEvent.submitter.name === 'submitButton';
-    
-      // If submitting, trigger validation
-      if (isSubmitButton) {
-        // Proceed with validation
-        const isValid = await trigger();
-        if (!isValid) {
-          return;
-        }
-      }
-    
+        addLogs(`A Teacher account has been created with ID number ${userData.employeeId}`);
+        submitData();
+        displayData();
+        closeModal();    
       try {
         const response = await createData('/createTeacherAccount', formData);
         const message = response.data.body === 'Request invalid'
@@ -157,10 +191,10 @@ const AcademicsForm = ({ displayData }) => {
           'colored',
           message === 'Added Successfully' ? 'success' : 'warning'
         );
-        addLogs();
+        addLogs(`A Teacher account has been created with ID number ${userData.employeeId}`);
         submitData();
         displayData();
-        closeModal();
+        closeModal();  
       } catch (error) {
         console.error('Error submitting data:', error);
       }
@@ -172,50 +206,32 @@ const AcademicsForm = ({ displayData }) => {
     <div className="h-full w-full p-1">
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={2}>
-              <Stack direction="row" spacing={1}>
-                <BasicSelectField
-                  label="Select Strand"
-                  name="course"
-                  control={control}
-                  error={!!errors.course}
-                  helperText={errors.course?.message}
-                  size="small"
-                  options={course}
-                  value={courseId || ''}
+        <MultipleSelectCheckmarks
+            label="Select Class"
+            name="section"
+            items={sections}
+            onChange={handleChange}
+            value={selectedSection}
+            selectedNames={selectedSection}
+            renderValue={() => (
+              <Stack gap={1} direction="row" flexWrap="wrap">
+                {getSelectedNames().map((name, index) => (
+                  <Chip
+                  key={index}
+                  label={name}
+                  onDelete={() => {
+                    const filteredIds = selectedSection.filter((_, idx) => idx !== index);
+                    setSelectedSections(filteredIds);
+                  }}
+                  deleteIcon={<CancelIcon onMouseDown={(event) => event.stopPropagation()} />}
                 />
-                <BasicSelectField
-                  label="Select section"
-                  name="section"
-                  control={control}
-                  error={!!errors.section}
-                  helperText={errors.section?.message}
-                  size="small"
-                  options={section}
-                  value={sectionId || ''}
-                />
-              </Stack>    
-              <Stack direction="row" spacing={1}>
-                <BasicSelectField
-                  label="Select year level"
-                  name="year_level"
-                  control={control}
-                  error={!!errors.year_level}
-                  helperText={errors.year_level?.message}
-                  size="small"
-                  options={yearLevel}
-                  value={yearLevelId || ''}
-                />
-              </Stack>        
+                ))}
+              </Stack>
+            )}
+          />   
         </Stack>
         <div className="flex my-5 justify-between">
-          <ControlledButton
-            text="Add section"
-            variant="contained"
-            size="small"
-            color="info"
-            onClick={handleSubmit(handleAddSection)}
-          />
-          <div className="flex gap-4">
+          <div className="flex justify-end gap-4">
             <ControlledButton
               name="submitButton"
               text="Submit"

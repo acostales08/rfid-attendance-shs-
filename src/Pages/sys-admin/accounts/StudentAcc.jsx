@@ -29,20 +29,7 @@ const StudentAcc = () => {
 
 
   const handleOpenViewModal = async(data) => {
-    const studentData = {
-      studentNo: data
-    }
-    const studentinfoRes = await createData('/student-info', studentData)
-    const studentCourse = await createData('/student-course', studentData)
-    const studentSeciont= await createData('/student-section', studentData)
-    
-    const stuData = {
-      info: studentinfoRes.data, 
-      courseinfo: studentCourse.data,
-      studSection: studentSeciont.data
-    }
-
-    console.log(stuData)
+    const stuData = student.filter(item => item.studentNo === data)
     openModal(stuData, 'View & Edit student information');
   };
 
@@ -126,12 +113,12 @@ const StudentAcc = () => {
               onClick={() => handleOpenViewModal(row.studentNo)}
             />
           </IconButton>
-          <IconButton color="primary">
+          {/* <IconButton color="primary">
             <FaPlus    
               size={18}
               onClick={() => handleOpenEditModal(row.studentNo)}
             />
-          </IconButton>
+          </IconButton> */}
         </div>
       ),
     },

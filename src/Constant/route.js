@@ -5,7 +5,7 @@ import {
       TeacherAcc,
       Attendance,
       Announcement,
-      Academics,
+      ClassContent,
       StudentProfile,
       ViewAttendance,
       TeacherInformation,
@@ -23,7 +23,7 @@ import {
 export const protectedRoutesConfig = [
 
     { path: '', component: SysDashboard, allowedRoles: ['admin', 'superadmin'] },
-    { path: 'academics', component: Academics, allowedRoles: ['admin', 'superadmin'] },
+    { path: 'class', component: ClassContent, allowedRoles: ['admin', 'superadmin'] },
     { path: 'attendance', component: Attendance, allowedRoles: ['admin', 'superadmin'] },
     { path: 'announcement', component: Announcement, allowedRoles: ['admin', 'superadmin'] },
     { path: 'studentAcc', component: StudentAcc, allowedRoles: ['admin', 'superadmin'] },

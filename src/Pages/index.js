@@ -7,7 +7,7 @@ export { default as Logs } from './sys-admin/Logs'
 
 // admin pages
 export { default as SysDashboard } from './sys-admin/Dashboard'
-export { default as Academics } from './sys-admin/Academics'
+export { default as ClassContent } from './sys-admin/Class'
 export { default as Attendance } from './sys-admin/attendance/Attendance'
 export { default as Announcement } from './sys-admin/Announcement/sys_announcement'
 export { default as StudentAcc } from './sys-admin/accounts/StudentAcc'

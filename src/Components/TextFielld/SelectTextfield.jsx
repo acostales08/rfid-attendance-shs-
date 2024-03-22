@@ -34,8 +34,8 @@ const BasicSelectField = (props) => {
           helperText={error && helperText}
         >
           {options.map((option) => (
-            <MenuItem key={option.id} value={String(option.id)}>
-              {option.name}
+            <MenuItem key={option.id} value={option.classes}>
+              {option.classes}
             </MenuItem>
           ))}
         </TextField>

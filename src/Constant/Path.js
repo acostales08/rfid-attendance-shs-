@@ -18,8 +18,8 @@
         },
         {
             id: 2,
-            title: 'Academics',
-            path: '/dashboard/academics',
+            title: 'Class',
+            path: '/dashboard/class',
             img:<FaGraduationCap size={20} className=' mx-2'/>,
             subLinks: []
         },
@@ -90,8 +90,8 @@
         },
         {
             id: 2,
-            title: 'Academics',
-            path: '/dashboard/academics',
+            title: 'Class',
+            path: '/dashboard/class',
             img:<FaGraduationCap size={20} className=' mx-2'/>,
             subLinks: []
         },

@@ -62,30 +62,37 @@ const TeacherInfo = () => {
         setTidExist(false)
       }, [id, email])
 
-      const teacherInfo = modalData?.teacher?.[0]; 
+      const teacherInfo = modalData?.[0]
 
       useEffect(() => {
         if (teacherInfo) {
-            setValue("employeeId", teacherInfo.employeeId || ""); 
-            setValue("firstName", teacherInfo.firstName || "");
-            setValue("middleName", teacherInfo.middleName || "");
-            setValue("lastName", teacherInfo.lastName || "");
-            
-            setValue("street", teacherInfo.address?.street || "");
-            setValue("barangay", teacherInfo.address?.barangay || "");
-            setValue("city", teacherInfo.address?.city || "");
-            setValue("zipCode", teacherInfo.address?.zip_code || "");
-            
-            setValue("email", teacherInfo.credentials?.email || "");
-            setValue("password", "sample");
+          setValue("employeeId", teacherInfo.employeeId || "");
+          setValue("firstName", teacherInfo.firstName || "");
+          setValue("middleName", teacherInfo.middleName || "");
+          setValue("lastName", teacherInfo.lastName || "");
+      
+          // Check if address exists before accessing its properties
+          if (teacherInfo.address) {
+            setValue("street", teacherInfo.address.street || "");
+            setValue("barangay", teacherInfo.address.barangay || "");
+            setValue("city", teacherInfo.address.city || "");
+            setValue("zipCode", teacherInfo.address.zip_code || "");
+          }
+      
+          // Check if credentials exist before accessing its properties
+          if (teacherInfo.credentials) {
+            setValue("email", teacherInfo.credentials.email || "");
+            setValue("password", "sample"); // Assuming this is a default password
+          }
         }
-    }, [teacherInfo, setValue]);
+      }, [teacherInfo, setValue]);
+
 
       const onSubmit = async(data, e) => {
         e.preventDefault();
       if(modalData){
         const formDatas ={
-            existid: teacherInfo.id,
+            existid: modalData?.[0].id,
             teacherid: data.employeeId,
             firstname: data.firstName,
             middlename: data.middleName,
@@ -152,143 +159,148 @@ const TeacherInfo = () => {
 
       };
   return (
-    <div className='h-full w-full p-1'>
-        <form action="" onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={1}>
-            <Stack direction="row" spacing={1}>
-                <ControlledTextField
-                    size='small'
-                    variant='outlined'
-                    label='Employee Number'
-                    name='employeeId'
-                    control={control}
-                    value={teacherInfo? teacherInfo.employeeId : ""}
-                    error={!!errors.employeeId || tidExist}
-                    helperText={tidExist? "Student ID number already exist" : errors.employeeId?.message}
-                />            
-            </Stack>
-            <Stack direction="row" spacing={1}>
-                <ControlledTextField
-                    size='small'
-                    variant='outlined'
-                    label='First Name'
-                    name='firstName'
-                    control={control}
-                    error={!!errors.firstName}
-                    helperText={errors.firstName?.message}
-                />            
-                <ControlledTextField
-                    size='small'
-                    variant='outlined'
-                    label='Middle Name'
-                    name='middleName'
-                    control={control}
-                    error={!!errors.middleName}
-                    helperText={errors.middleName?.message}
-                />
-                <ControlledTextField
-                    size='small'
-                    variant='outlined'
-                    label='Last Name'
-                    name='lastName'
-                    control={control}
-                    error={!!errors.lastName}
-                    helperText={errors.lastName?.message}
-                />               
-            </Stack>
-            <Stack direction="row" spacing={1}>
-                <ControlledTextField
-                    size='small'
-                    variant='outlined'
-                    label='Street'
-                    name='street'
-                    control={control}
-                    error={!!errors.street}
-                    helperText={errors.street?.message}
-                />
-            </Stack>
-            <Stack direction="row" spacing={1}>
-
-                <ControlledTextField
-                    size='small'
-                    variant='outlined'
-                    label='Barangay'
-                    name='barangay'
-                    control={control}
-                    error={!!errors.barangay}
-                    helperText={errors.barangay?.message}
-                />
-                <ControlledTextField
-                    size='small'
-                    variant='outlined'
-                    label='City'
-                    name='city'
-                    control={control}
-                    error={!!errors.city}
-                    helperText={errors.city?.message}
-                />
-                <ControlledTextField
-                    size='small'
-                    variant='outlined'
-                    label='Zip Code'
-                    name='zipCode'
-                    control={control}
-                    error={!!errors.zipCode}
-                    helperText={errors.zipCode?.message}
-                />                
-            </Stack>
-                <ControlledTextField
-                    size='small'
-                    variant='outlined'
-                    label='Email'
-                    name='email'
-                    control={control}
-                    error={!!errors.email || emailExist}
-                    helperText={emailExist? "Email is already exist" : errors.email?.message}
-                />
-                {modalData === null &&
-                
-                <ControlledTextField
-                        size='small'
-                        variant='outlined'
-                        label='Password'
-                        name='password'
-                        value={teacherInfo? teacherInfo.credentials.password : ""}
-                        control={control}
-                        error={!!errors.password}
-                        helperText={errors.password?.message}
-                    />                   
-            }
-            </Stack>            
-            <div className="flex my-5 justify-end gap-4">
-                <ControlledButton
-                    text='Back'
-                    variant='contained'
-                    size='small'
-                    onClick={handleBack}
-                    disabled={currentStep === 1}
-                    color='error'
-                />
-                    <ControlledButton
-                    text='Next'
-                    variant='contained'
-                    size='small'
-                    type='submit'
-                    color='primary'
-                    // onClick={handleNext}
-                    />
-                <ControlledButton
-                    text='Cancel'
-                    variant='outlined'
-                    size='small'
-                    color='primary'
-                    onClick={closeModal}
-                />
-            </div>
-        </form>
-
-
+<div className='h-full w-full p-1'>
+  <form action="" onSubmit={handleSubmit(onSubmit)}>
+    <Stack spacing={1}>
+      <Stack direction="row" spacing={1}>
+        <ControlledTextField
+          size='small'
+          variant='outlined'
+          label='Employee Number'
+          name='employeeId'
+          control={control}
+          value={modalData? modalData[0]?.employeeId : ""}
+          error={!!errors.employeeId || tidExist}
+          helperText={tidExist ? "Student ID number already exists" : errors.employeeId?.message}
+        />  
+      </Stack>
+      <Stack direction="row" spacing={1}>
+        <ControlledTextField
+          size='small'
+          variant='outlined'
+          label='First Name'
+          name='firstName'
+          control={control}
+          value={modalData?.firstName || ""}
+          error={!!errors.firstName}
+          helperText={errors.firstName?.message}
+        />            
+        <ControlledTextField
+          size='small'
+          variant='outlined'
+          label='Middle Name'
+          name='middleName'
+          control={control}
+          value={modalData?.middleName || ""}
+          error={!!errors.middleName}
+          helperText={errors.middleName?.message}
+        />
+        <ControlledTextField
+          size='small'
+          variant='outlined'
+          label='Last Name'
+          name='lastName'
+          control={control}
+          value={modalData?.lastName || ""}
+          error={!!errors.lastName}
+          helperText={errors.lastName?.message}
+        />               
+      </Stack>
+      <Stack direction="row" spacing={1}>
+        <ControlledTextField
+          size='small'
+          variant='outlined'
+          label='Street'
+          name='street'
+          control={control}
+          value={modalData?.address?.street || ""}
+          error={!!errors.street}
+          helperText={errors.street?.message}
+        />
+      </Stack>
+      <Stack direction="row" spacing={1}>
+        <ControlledTextField
+          size='small'
+          variant='outlined'
+          label='Barangay'
+          name='barangay'
+          control={control}
+          value={modalData?.address?.barangay || ""}
+          error={!!errors.barangay}
+          helperText={errors.barangay?.message}
+        />
+        <ControlledTextField
+          size='small'
+          variant='outlined'
+          label='City'
+          name='city'
+          control={control}
+          value={modalData?.address?.city || ""}
+          error={!!errors.city}
+          helperText={errors.city?.message}
+        />
+        <ControlledTextField
+          size='small'
+          variant='outlined'
+          label='Zip Code'
+          name='zipCode'
+          control={control}
+          value={modalData?.address?.zipCode || ""}
+          error={!!errors.zipCode}
+          helperText={errors.zipCode?.message}
+        />                
+      </Stack>
+      <ControlledTextField
+        size='small'
+        variant='outlined'
+        label='Email'
+        name='email'
+        control={control}
+        value={modalData?.credentials?.email || ""}
+        error={!!errors.email || emailExist}
+        helperText={emailExist ? "Email already exists" : errors.email?.message}
+      />
+      {modalData === null && 
+        <ControlledTextField
+          size='small'
+          variant='outlined'
+          label='Password'
+          name='password'
+          value={modalData?.credentials?.password || ""}
+          control={control}
+          error={!!errors.password}
+          helperText={errors.password?.message}
+        />
+      }
+    </Stack>            
+    <div className="flex my-5 justify-end gap-4">
+      <ControlledButton
+        text='Back'
+        variant='contained'
+        size='small'
+        onClick={handleBack}
+        disabled={currentStep === 1}
+        color='error'
+      />
+      <ControlledButton
+        text='Next'
+        variant='contained'
+        size='small'
+        type='submit'
+        color='primary'
+      />
+      <ControlledButton
+        text='Cancel'
+        variant='outlined'
+        size='small'
+        color='primary'
+        onClick={closeModal}
+      />
     </div>
+  </form>
+</div>
+
+
   )
 }
 

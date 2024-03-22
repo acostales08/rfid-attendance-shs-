@@ -14,9 +14,9 @@ const MultipleSelectCheckmarks = ({ items, onChange, label, value, renderValue, 
         renderValue={renderValue}
       >
         {items.map((option) => (
-          <MenuItem key={option.id} value={option.id} sx={{ justifyContent: "space-between" }}>
-            {option.name}
-            {selectedNames.includes(option.id) && <CheckIcon color="info" />}
+          <MenuItem key={option.id} value={option.classes} sx={{ justifyContent: "space-between" }}>
+            {option.classes}
+            {selectedNames.includes(option.classes) && <CheckIcon color="info" />}
           </MenuItem>
         ))}
       </Select>

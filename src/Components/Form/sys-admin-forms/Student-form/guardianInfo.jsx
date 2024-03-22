@@ -50,7 +50,7 @@ const GuardianInfo = () => {
         setPhoneNumExist(false);
       }, [Pnum]);
 
-      const studentinfo = modalData?.info?.[0]; // Null checks using optional chaining
+      const studentinfo = modalData?.[0];
       useEffect(() => {
           if (studentinfo) {
             setValue("parentFirstName", studentinfo.parentFirstName || "");

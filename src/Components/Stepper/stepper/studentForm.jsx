@@ -8,7 +8,7 @@ import AcademicsForm from '../../Form/sys-admin-forms/Student-form/academics'
 const StudentForm = ({displayData}) => {
 
   const { currentStep } = useStepper()
-  const steps = ['Student Info', 'Guardians Info', 'Academics'];
+  const steps = ['Student Info', 'Guardians Info', 'Select Section'];
 
   const renderStepContent = (step) => {
     switch (step) {

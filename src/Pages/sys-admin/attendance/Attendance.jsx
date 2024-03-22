@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { ControlledDataTable } from '../../../Components';
 import { Paper, TextField, Button } from '@mui/material';
 import { fetchAttendance } from '../../../utils/api';
+import { useReactToPrint } from 'react-to-print';
+import { ComponentToPrint } from '../../../Components/Print/print';
 
 
 const currentDate = new Date();
@@ -25,6 +27,16 @@ const Attendance = () => {
     } catch (error) {
       console.error('Error fetching attendance:', error);
     }
+  };
+
+  const componentRef = useRef();
+
+  const handleReactToPrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+
+  const handlePrint = () => {
+    handleReactToPrint();
   };
 
 
@@ -56,7 +68,7 @@ const Attendance = () => {
     },
     {
       name: 'Section',
-      selector: (row) => `${row.course} ${row.yearLevel}-${row.section}`,
+      selector: (row) => row.classes,
       sortable: true,
       center: true,
       width: '200px',
@@ -85,9 +97,13 @@ const Attendance = () => {
   ];
 
   return (
+    <>
+    <div style={{ display: 'none'}}>
+      <ComponentToPrint startDate={startDate} endDate={endDate} attendance={attendance}  ref={componentRef}/>
+    </div>
     <div className="h-full w-full bg-[#f3f0f2] p-2">
       <div className='flex items-center justify-between pb-1'>
-        <Button size='small' variant='contained' sx={{marginBottom: 1}}>Print</Button>
+        <Button size='small' variant='contained' onClick={handlePrint} sx={{marginBottom: 1}}>Print</Button>
         <div className='flex gap-4'>
           <TextField
             type='date'
@@ -123,6 +139,7 @@ const Attendance = () => {
         />
       </Paper>
     </div>
+    </>
   );
 };
 

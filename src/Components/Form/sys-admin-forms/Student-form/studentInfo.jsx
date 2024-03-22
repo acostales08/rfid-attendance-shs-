@@ -41,19 +41,6 @@ const StudentInfoForm = () => {
         watch
       } = useForm({
         resolver: zodResolver(studentSchema),
-        defaultValues: {
-            studentNo: userData.studentNo || '',
-            rfidNo: userData.rfidNo || '',
-            firstName: userData.firstName || '',
-            middleName: userData.middleName || '',
-            lastName: userData.lastName || '',
-            street: userData.address?.street || '',
-            barangay: userData.address?.barangay || '',
-            city: userData.address?.city || '',
-            zipCode: userData.address?.zip_code || '',
-            email: userData.credentials?.email || '',
-            password: userData.credentials?.password || '',
-          },
       });
 
       const email = watch('email');
@@ -66,7 +53,7 @@ const StudentInfoForm = () => {
       }, [email, stId, strfid]);
 
       
-      const studentinfo = modalData?.info?.[0]; 
+      const studentinfo = modalData?.[0]
 
       useEffect(() => {
           if (studentinfo) {
@@ -92,17 +79,24 @@ const StudentInfoForm = () => {
         e.preventDefault();
         if(modalData){
             const formDatas ={
-                existid: studentinfo.id,
-                studentno: data.studentNo,
-                rfidno: data.rfidNo,
-                firstname: data.firstName,
-                middlename: data.middleName,
-                lastname: data.lastName,
-                street: data.street,
-                brgy: data.barangay,
-                city: data.city,
-                zcode: data.zipCode,
-                emailadd: data.email,
+                id: modalData?.[0].id,
+                studentNo: data.studentNo,
+                rfidNo: data.rfidNo,
+                firstName: data.firstName,
+                middleName: data.middleName,
+                lastName: data.lastName,
+                address: {
+                  street: data.street,
+                  barangay: data.barangay,
+                  city: data.city,
+                  zip_code: data.zipCode,
+                },
+                credentials: {
+                  email: data.email,
+                  ...(modalData === null && { password: data.password }),
+                  userType: "student"
+      
+                },
             }
             setUserData(formDatas);
             handleNext();
@@ -195,7 +189,7 @@ const StudentInfoForm = () => {
                     variant='outlined'
                     label='Student Number'
                     name='studentNo'
-                    value={studentinfo? studentinfo.studentNo : ""}
+                    // value={studentinfo? studentinfo.studentNo : ""}
                     control={control}
                     error={!!errors.studentNo || sid}
                     helperText={sid? "Student ID number already exist" : errors.studentNo?.message}
@@ -205,7 +199,7 @@ const StudentInfoForm = () => {
                     variant='outlined'
                     label='RFID no.'
                     name='rfidNo'
-                    value={studentinfo? studentinfo.rfidNo : ""}
+                    // value={studentinfo? studentinfo.rfidNo : ""}
                     control={control}
                     error={!!errors.rfidNo || rfidExists}
                     helperText={rfidExists? "Rfid number already exist" : errors.rfidNo?.message}
@@ -217,7 +211,7 @@ const StudentInfoForm = () => {
                     variant='outlined'
                     label='First Name'
                     name='firstName'
-                    value={studentinfo? studentinfo.firstName : ""}
+                    // value={studentinfo? studentinfo.firstName : ""}
                     control={control}
                     error={!!errors.firstName}
                     helperText={errors.firstName?.message}
@@ -227,7 +221,7 @@ const StudentInfoForm = () => {
                     variant='outlined'
                     label='Middle Name'
                     name='middleName'
-                    value={studentinfo? studentinfo.middleName : ""}
+                    // value={studentinfo? studentinfo.middleName : ""}
                     control={control}
                     error={!!errors.middleName}
                     helperText={errors.middleName?.message}
@@ -237,7 +231,7 @@ const StudentInfoForm = () => {
                     variant='outlined'
                     label='Last Name'
                     name='lastName'
-                    value={studentinfo? studentinfo.lastName : ""}
+                    // value={studentinfo? studentinfo.lastName : ""}
                     control={control}
                     error={!!errors.lastName}
                     helperText={errors.lastName?.message}
@@ -249,7 +243,7 @@ const StudentInfoForm = () => {
                     variant='outlined'
                     label='Street'
                     name='street'
-                    value={studentinfo? studentinfo.address.street : ""}
+                    // value={studentinfo? studentinfo.address.street : ""}
                     control={control}
                     error={!!errors.street}
                     helperText={errors.street?.message}
@@ -259,7 +253,7 @@ const StudentInfoForm = () => {
                     variant='outlined'
                     label='Barangay'
                     name='barangay'
-                    value={studentinfo? studentinfo.address.barangay : ""}
+                    // value={studentinfo? studentinfo.address.barangay : ""}
                     control={control}
                     error={!!errors.barangay}
                     helperText={errors.barangay?.message}
@@ -271,7 +265,7 @@ const StudentInfoForm = () => {
                     variant='outlined'
                     label='City'
                     name='city'
-                    value={studentinfo? studentinfo.address.city : ""}
+                    // value={studentinfo? studentinfo.address.city : ""}
                     control={control}
                     error={!!errors.city}
                     helperText={errors.city?.message}
@@ -281,7 +275,7 @@ const StudentInfoForm = () => {
                     variant='outlined'
                     label='Zip Code'
                     name='zipCode'
-                    value={studentinfo? studentinfo.address.zip_Code : ""}
+                    // value={studentinfo? studentinfo.address.zip_Code : ""}
                     control={control}
                     error={!!errors.zipCode}
                     helperText={errors.zipCode?.message}
@@ -292,7 +286,7 @@ const StudentInfoForm = () => {
                     variant='outlined'
                     label='Email'
                     name='email'
-                    value={studentinfo? studentinfo.credentials.email : ""}
+                    // value={studentinfo? studentinfo.credentials.email : ""}
                     control={control}
                     error={!!errors.email || emailExist}
                     helperText={emailExist? "Email is already exist" : errors.email?.message}
@@ -304,7 +298,7 @@ const StudentInfoForm = () => {
                             variant='outlined'
                             label='Password'
                             name='password'
-                            value={studentinfo? studentinfo.credentials.password : ""}
+                            // value={studentinfo? studentinfo.credentials.password : ""}
                             control={control}
                             error={!!errors.password}
                             helperText={errors.password?.message}
