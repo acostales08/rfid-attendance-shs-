@@ -56,7 +56,7 @@ const StudentAcc = () => {
   const displayData = async () => {
     try{
       const studentData = await fetchAccountData('/displayAllStudent');
-      setStudent(studentData);     
+      setStudent(studentData.data);     
        
     }catch(error){
       console.log("error fetching data", error);
@@ -123,9 +123,9 @@ const StudentAcc = () => {
       ),
     },
   ];
+  const studentData = student.length === 0 ? [] : student;
 
-const studentData = student === "No record" ? [] : student;
-
+  console.log(student)
   return (
     <>
     {loading? <ControlledBackdrop open={loading}/> : (

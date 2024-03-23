@@ -92,7 +92,7 @@ const RfidAttendance = () => {
       <Paper elevation={3}>
         <div className=" h-full w-full p-6">
             <div className="border h-[55vh] w-[65vh]">
-                <div className="">
+                <div className="flex justify-center items-end">
                 {name.result === 1 ? (
                        <h3 className='p-4 w-[75%] text-center text-xl text-gray-600'>rfid not exist sa student table</h3>
                      ):name.result === 2 ? (                    

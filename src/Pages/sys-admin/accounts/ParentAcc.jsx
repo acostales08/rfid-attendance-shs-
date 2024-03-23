@@ -23,7 +23,7 @@ const ParentAcc = () => {
   const displayData = async() => {
     try {
       const parents = await fetchAccountData('/displayAllParent');
-      setParentData(parents);      
+      setParentData(parents.data);      
     } catch (error) {
       console.log("error", error);
     } finally {

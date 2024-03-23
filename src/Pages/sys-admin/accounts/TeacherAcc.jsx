@@ -48,7 +48,7 @@ const StudentAcc = () => {
   const displayData = async () => {
     try{
       const teacherData = await fetchAccountData('/displayAllTeacher');
-      setTeacher(teacherData);      
+      setTeacher(teacherData.data);      
     }catch(error){
       console.log("errorr fetching data", error);
     }finally{
