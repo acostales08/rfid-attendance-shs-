@@ -23,9 +23,14 @@ export const displaySelectedId = async(id) => {
     return response.data.body
 }
 
-export const fetchAccountData = async (endpoint) => {
-    const response = await axios.get(`${baseUrl}/registrar/v1/api${endpoint}`)
-    return response.data
+// export const fetchAccountData = async (endpoint) => {
+//     const response = await axios.get(`${baseUrl}/registrar/v1/api${endpoint}`)
+//     return response.data
+// }
+
+export const fetchAccountData = async(endPoint) => {
+    const response = await axios.get(`${baseUrl}/registrar/v1/api${endPoint}`)
+    return response
 }
 
 // registrar end
