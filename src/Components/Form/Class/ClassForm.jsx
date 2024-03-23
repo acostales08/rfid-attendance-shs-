@@ -45,9 +45,11 @@ const ClassForm = ({ displayData }) => {
   const onSubmit = async (data, e) => {
     e.preventDefault();
 
+    console.log(modalData)
+
     const sections = `${data.course} ${data.yearLevel}-${data.section}`;
     const formData = {
-      id: modalData.id,
+      id: modalData?.[0].id,
       classes: sections,
     };
 
@@ -80,7 +82,7 @@ const ClassForm = ({ displayData }) => {
     } else {
       const sections = `${data.course} ${data.yearLevel}-${data.section}`;
       const formdata = {
-        id: modalData.id,
+        id: modalData? modalData.id : "",
         classes: sections,
       };
       try {
