@@ -302,7 +302,7 @@ const StudentInfoForm = () => {
                             variant='outlined'
                             label='Password'
                             name='password'
-                            // value={studentinfo? studentinfo.credentials.password : ""}
+                            value={studentinfo? studentinfo.credentials.password : ""}
                             control={control}
                             error={!!errors.password}
                             helperText={errors.password?.message}

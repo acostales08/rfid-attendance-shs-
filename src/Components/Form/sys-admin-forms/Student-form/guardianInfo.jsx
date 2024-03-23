@@ -69,13 +69,11 @@ const GuardianInfo = () => {
         if(modalData){
             const formDatas = {
                 ...userData,
-                parentfirstname: "sample",
-                parentmiddlename: 'parentMiddleName',
-                parentlastname: 'parentLastName',
-                parentphoneno: 'parentPhoneNo',
+                parentFirstName: data.parentFirstName,
+                parentMiddleName: data.parentMiddleName,
+                parentLastName: data.parentLastName,
+                parentPhoneNo: data.parentPhoneNo,
             }
-            console.log(data.parentfirstname)
-            console.log(formDatas)
             setUserData(formDatas)
             handleNext()
         }else{

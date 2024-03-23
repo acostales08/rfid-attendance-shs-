@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Paper } from '@mui/material';
 import { ControlledDataTable, ControlledBackdrop } from '../../Components';
-import { createData } from '../../utils/api';
+import { createData, fetchAccountData } from '../../utils/api';
+import { useUser } from '../../utils/context/userContext';
 
 
 const StudentProfile = () => {
@@ -10,33 +11,25 @@ const StudentProfile = () => {
   const [course, setCourse] = useState([]);
   const [loading, setLoading] = useState(true) 
 
+  const { user } = useUser()
   useEffect(() => {
-    const fetchData = async () => {
-      const item = localStorage.getItem("userData");
-      const result = JSON.parse(item);
-      const studentNo = result.studentNo;
-      
-      const data = {
-        studentNo: studentNo
-      };
+    displayData()
+  }, [])
 
-      const [infoData, courseData] = await Promise.all([
-        createData('/student-info', data),
-        createData('/student-course', data)
-      ]);
-
-      setStudentInfo(infoData.data);
-      setCourse(courseData.data);
+  const displayData = async () => {
+    try{
+      const studentData = await fetchAccountData('/displayAllStudent');
+      setStudentInfo(studentData);     
+       
+    }catch(error){
+      console.log("error fetching data", error);
+    }finally{
       setLoading(false)
-    };
+    }
 
-    fetchData();
-  }, []);
+  };
 
-  const array = studentInfo.map(arr => {
-    const coursename = course.map(arr2 => arr2.courseName);
-    return { ...arr, coursename };
-  });
+  const studentAccount = studentInfo.filter(item => item.studentNo === user.studentNo)
 
   // const NumberedCell = ({ rowIndex }) => <div>{rowIndex}</div>;
   // const columns = [
@@ -58,7 +51,7 @@ const StudentProfile = () => {
   return (
     <>
     {loading? <ControlledBackdrop open={loading}/> : (
-      <div className='h-full w-full bg-[#f3f0f2] p-5'>
+      <div className='h-full w-full bg-[#f3f0f2] p-5 font-serif'>
         <div className="flex gap-4 justify-center items-center sm:flex-col">
           <div className="h-full w-[60%] sm:w-full">
             <Paper elevation={1} style={{
@@ -68,7 +61,7 @@ const StudentProfile = () => {
               padding: "52px 32px",
               flexDirection: "column"
             }}>
-              {array.map((item, index) => (
+              {studentAccount.map((item, index) => (
                 <React.Fragment key={index}>
                   <h1 className="text-gray-600 text-2xl">Student Profile</h1>
                   <h1 className="text-gray-600 text-1xl">{item.coursename}</h1>

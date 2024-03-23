@@ -23,6 +23,7 @@ import requiredString from '../../../../utils/Schema/formSchema';
 
 
 const AcademicsForm = ({ displayData }) => {
+  const [file, setFile] = useState();
   const [ sections, setSections ] = useState([])
   const [ selectSection, setSelectSection ] = useState([])
   const { ToastMessege } = useToastMessege();
@@ -39,7 +40,51 @@ const AcademicsForm = ({ displayData }) => {
     resolver: zodResolver(academicSchema),
   });
 
+  const handleChange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
 
+    reader.onload = () => {
+      setFile(reader.result);
+      saveImageLocally(reader.result);
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const saveImageLocally = (imageData) => {
+    // Create a new image element
+    const img = new Image();
+    img.src = imageData;
+
+    // Use canvas to draw the image and convert it to a blob
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
+
+    // Convert the canvas to a blob
+    canvas.toBlob((blob) => {
+      // Create a new form data
+      const formData = new FormData();
+      formData.append('file', blob, 'uploadedImage.png');
+
+      // Send the form data to your server endpoint
+      fetch('/your-server-endpoint', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        // Handle the response as needed
+      })
+      .catch(error => {
+        // Handle errors
+      });
+    }, 'image/png', 1); // 'image/png' is the default value, and the third parameter is the quality, set to 1 (highest quality)
+  };
   const date = new Date();
   const schoolYear = date.getFullYear();
 
@@ -93,7 +138,7 @@ const AcademicsForm = ({ displayData }) => {
     if(modalData){
       const formDatas = {
         ...userData,
-        // imageurl: "sampleimage01.png",
+        imageurl: file,
           classesModels:{
             id: sections?.[0].id,
             empId: userData.studentNo,
@@ -109,7 +154,7 @@ const AcademicsForm = ({ displayData }) => {
         console.log(response)
         if(message === 'Created successfully.'){
         ToastMessege(
-          "Created successfully.",
+          "Updated successfully.",
           'top-right',
           false,
           true,
@@ -133,7 +178,7 @@ const AcademicsForm = ({ displayData }) => {
     }else{
       const formData = {
         ...userData,
-        imageurl: "sampleimage01.png",
+        // imageurl: "sampleimage01.png",
         classesModels: {
           empId: userData.studentNo,
           classes: data.section ,
@@ -173,11 +218,16 @@ const AcademicsForm = ({ displayData }) => {
 
   return (
     <div className="h-full w-full p-1">
-      <div className="h-[40vh] w-full mb-10">
-        <div className="border h-full w-full p-4">
-            <img src="" alt="" />
+      <div className="mb-12 h-full w-full flex justify-center items-center rounded-md">
+        <div className="border h-[32vh] w-[32vh] p-4">
+            <img src={file} />
         </div>
-      </div>
+        </div>
+        <div className="border mb-4">
+          <div className="flex">
+              <input type="file" name='imageurl' onChange={handleChange} />       
+          </div>
+        </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={2}>
           <Stack direction="row" spacing={1}>
