@@ -19,8 +19,6 @@ const StudentAcc = () => {
   const [ student, setStudent ] = useState([]);
   const [ loading, setLoading ] = useState(true)
 
-  console.log(student)
-
   const handleOpenAddModal = () => {
     openModal(null, "Create Student Account")
   };

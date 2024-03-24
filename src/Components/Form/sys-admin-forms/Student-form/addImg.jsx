@@ -22,11 +22,11 @@ const AddImage = ({ displayData }) => {
   const { userData, submitData, setUserData } = useStepper();
   const { user } = useUser();
 
-  // save image to firebase
-  const [imgUrl, setImgUrl] = useState('')
+  const defaultImage = modalData? modalData?.[0].imageurl : ""; 
+  const [imgUrl, setImgUrl] = useState(defaultImage)
 
  
-console.log(modalData?.[0].imageurl)
+
   // const { handleSubmit, formState: { errors } } = useForm();
 
   const handleClick = (e) => {
@@ -106,7 +106,7 @@ console.log(modalData?.[0].imageurl)
     if(modalData){
       const formDatas = {
         ...userData,
-        imageurl: data.imgUrl
+        imageurl: imgUrl
       };
       setUserData(formDatas);      
       try {
@@ -154,15 +154,10 @@ console.log(modalData?.[0].imageurl)
           //   'colored',
           //   'success'
           // );
-          console.log("177: ");
           addLogs(`A student account has been created with ID number ${userData.studentNo}`);
-          console.log("180: ");
           submitData();
-          console.log("182: ");
           displayData();
-          console.log("184: ");
           closeModal();   
-          console.log("186: ");
           alert("Created successfully");
         }    
       } catch (error) {
@@ -174,8 +169,8 @@ console.log(modalData?.[0].imageurl)
     <div className="h-full w-full p-1">
       <form onSubmit={onSubmit}>
         <div className="mb-12 h-full w-full flex justify-center items-center rounded-md">
-          <div className="border h-[32vh] w-[32vh] p-4">
-            <img src={modalData ? modalData?.[0].imageurl: imgUrl} alt="Uploaded" />
+          <div className="border h-[32vh] w-[32vh] overflow-hidden">
+            <img src={imgUrl} alt="Uploaded"  className="border h-[32vh] w-[32vh]"/>
           </div>
         </div>
         <div className="border mb-4 mx-4">

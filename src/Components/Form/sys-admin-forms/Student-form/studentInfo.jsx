@@ -74,8 +74,6 @@ const StudentInfoForm = () => {
               setValue("password", "sample");
           }
       }, [studentinfo, setValue]);
-
-      console.log(modalData?.[0].credentials.id)
       
       const onSubmit = async (data, e) => {
         e.preventDefault();
