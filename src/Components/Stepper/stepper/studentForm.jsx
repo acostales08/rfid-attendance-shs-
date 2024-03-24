@@ -20,7 +20,7 @@ const StudentForm = ({displayData}) => {
       case 3:
         return <AcademicsForm displayData={displayData}/>;
       case 4:
-        return <AddImage />;
+        return <AddImage displayData={displayData}/>;
       default:
         return null;
     }

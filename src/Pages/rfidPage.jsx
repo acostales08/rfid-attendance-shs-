@@ -93,11 +93,11 @@ const RfidAttendance = () => {
         <div className=" h-full w-full p-6">
             <div className="border h-[55vh] w-[65vh]">
                 <div className="flex justify-center items-end">
-                  <img src={name.image} alt="" />
+                  <img src={name.imgUrl} alt="" width="400" height="340"/>
                 </div>
             </div> 
             <div className="w-full border p-6 pl-2 flex gap-3 text-xl ">
-              <h3 className="">Fullname:</h3>
+              <h3 className="">Fullname</h3>
               <h3 className="border rounder-md w-full p-1">{name.fullname}</h3>
             </div>
         </div>

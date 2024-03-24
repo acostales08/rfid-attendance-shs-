@@ -39,7 +39,7 @@ const StudentAcc = () => {
         case "Create Student Account":
            return <StudentForm onClick={closeModal} displayData={displayData}/>;
         case "Add new academic records":
-           return <AddImage/>;
+           return <AddImage onClick={closeModal} displayData={displayData}/>;
         case "View & Edit student information":
            return <StudentForm onClick={closeModal} displayData={displayData}/>;
         default:

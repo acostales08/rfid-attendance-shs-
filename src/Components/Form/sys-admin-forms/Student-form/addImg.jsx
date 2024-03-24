@@ -11,20 +11,49 @@ import { useToastMessege } from '../../../../utils/context/toastContext';
 import requiredString from '../../../../utils/Schema/formSchema';
 import ControlledTextField from '../../../TextFielld/TextField';
 
+import { imageDb } from '../../../../utils/firebase-config'
+import { getDownloadURL, ref as sRef, uploadBytesResumable } 
+        from "firebase/storage"
+
 const AddImage = ({ displayData }) => {
-  const [file, setFile] = useState(null); 
+  const [file, setFile] = useState(''); 
   const { ToastMessage } = useToastMessege(); 
   const { closeModal, modalData } = useCrudModal();
   const { userData, submitData, setUserData } = useStepper();
   const { user } = useUser();
 
-  const imgSchema = z.object({
-    image: requiredString('Please select an image'),
-  });
+  // save image to firebase
+  const [imgUrl, setImgUrl] = useState('')
 
-  const { control, handleSubmit, formState: { errors } } = useForm({
-    resolver: zodResolver(imgSchema),
-  });
+ 
+
+  // const { handleSubmit, formState: { errors } } = useForm();
+
+  const handleClick = (e) => {
+    const fileName = e.target.files[0];
+    const name = +new Date() + fileName.name;
+    console.log("name of pic: " + name);
+    const metaData = {
+      contentType: fileName.type
+    }
+
+    const storageRef = sRef(imageDb, "image/"+name);
+    const uploadTask = uploadBytesResumable(storageRef, fileName, metaData);
+
+    uploadTask.on("state-changed", (snapshot) => {
+      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    },
+    (error) => {
+      alert("error");
+    },
+    () => {
+      getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+        console.log("downloadURL: " + downloadURL);
+        setImgUrl(downloadURL);
+      })
+    }
+    );
+  }
 
   const addLogs = async (message) => {
     const email = user.email;
@@ -34,59 +63,46 @@ const AddImage = ({ displayData }) => {
         user: email
       };
       const response = await add('/save-logs', formData); // Changed formdata to formData
-      console.log(response);
+      console.log("addlogs: " +response);
     } catch (error) {
       console.error("Error occurred while making request:", error);
     }
   };
 
-  const handleChange = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      setFile(reader.result);
-      saveImageLocally(reader.result);
-    };
-
-    if (file) {
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const saveImageLocally = async (imageData) => {
-    const img = new Image();
-    img.src = imageData;
+  // const saveImageLocally = async (imageData) => {
+  //   const img = new Image();
+  //   img.src = imageData;
   
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
+  //   img.onload = () => {
+  //     const canvas = document.createElement('canvas');
+  //     const ctx = canvas.getContext('2d');
+  //     canvas.width = img.width;
+  //     canvas.height = img.height;
+  //     ctx.drawImage(img, 0, 0);
   
-      canvas.toBlob(async (blob) => {
-        const formData = new FormData();
-        formData.append('file', blob, 'uploadedImage.png');
+  //     canvas.toBlob(async (blob) => {
+  //       const formData = new FormData();
+  //       formData.append('file', blob, 'uploadedImage.png');
   
-        try {
-          const response = await fetch('/your-server-endpoint', {
-            method: 'POST',
-            body: formData,
-          });
-          if (!response.ok) {
-            throw new Error('Failed to upload image');
-          }
-        } catch (error) {
-          console.error('Error uploading image:', error);
-        }
-      }, 'image/png', 1);
-    };
-  };
+  //       try {
+  //         const response = await fetch('/your-server-endpoint', {
+  //           method: 'POST',
+  //           body: formData,
+  //         });
+  //         if (!response.ok) {
+  //           throw new Error('Failed to upload image');
+  //         }
+  //       } catch (error) {
+  //         console.error('Error uploading image:', error);
+  //       }
+  //     }, 'image/png', 1);
+  //   };
+  // };
   
+  console.log("data:" + userData.lastName);
 
-  const onSubmit = async (data) => {
-
+  const onSubmit = async (e, data) => {
+    e.preventDefault();
     if(modalData){
       const formDatas = {
         ...userData,
@@ -95,18 +111,18 @@ const AddImage = ({ displayData }) => {
       setUserData(formDatas);      
       try {
         const response = await updateData('/updateStudentAccount', formDatas);
-        console.log(response)
-        ToastMessage(
-          "Updated successfully.",
-          'top-right',
-          false,
-          true,
-          true,
-          true,
-          undefined,
-          'colored',
-          'success'
-        );
+        console.log("res >> " + response)
+        // ToastMessage(
+        //   "Updated successfully.",
+        //   'top-right',
+        //   false,
+        //   true,
+        //   true,
+        //   true,
+        //   undefined,
+        //   'colored',
+        //   'success'
+        // );
         addLogs(`A student account has been updated with ID number ${userData.studentNo}`);
         submitData();
         displayData();
@@ -115,28 +131,40 @@ const AddImage = ({ displayData }) => {
         
       }
     }else{
+      console.log("DATA: " + data);
       const formData = {
         ...userData,
-        image: data.image
+        imageurl: imgUrl
       };
+      console.log('IMG FORM DATA: ' + formData);
       try {
         const response = await createData('/createStudentAccount', formData);
         console.log(response)
-        ToastMessage(
-          "Created successfully.",
-          'top-right',
-          false,
-          true,
-          true,
-          true,
-          undefined,
-          'colored',
-          'success'
-        );
-        addLogs(`A student account has been created with ID number ${userData.studentNo}`);
-        submitData();
-        displayData();
-        closeModal();        
+        console.log("201: " + response.data);
+        if (response.status == 201) {
+          console.log("166: ");
+          // ToastMessage(
+          //   "Created successfully.",   
+          //   'top-right',
+          //   false,
+          //   true,
+          //   true,
+          //   true,
+          //   undefined,
+          //   'colored',
+          //   'success'
+          // );
+          console.log("177: ");
+          addLogs(`A student account has been created with ID number ${userData.studentNo}`);
+          console.log("180: ");
+          submitData();
+          console.log("182: ");
+          displayData();
+          console.log("184: ");
+          closeModal();   
+          console.log("186: ");
+          alert("Created successfully");
+        }    
       } catch (error) {
     }
   };
@@ -144,15 +172,15 @@ const AddImage = ({ displayData }) => {
 
   return (
     <div className="h-full w-full p-1">
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={onSubmit}>
         <div className="mb-12 h-full w-full flex justify-center items-center rounded-md">
           <div className="border h-[32vh] w-[32vh] p-4">
-            <img src={file} alt="Uploaded" />
+            <img src={imgUrl} alt="Uploaded" />
           </div>
         </div>
         <div className="border mb-4 mx-4">
           <div className="flex px-2">
-            <ControlledTextField control={control} type='file' onChange={handleChange} name='image'/>
+            <input type='file' onChange={handleClick} name='imageurl'/>
           </div>
         </div>
         <div className="flex my-5 justify-end gap-4">
