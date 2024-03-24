@@ -12,9 +12,7 @@ import useCount from '../../../../utils/hooks/useCount'
 
 const GuardianInfo = () => {
 
-    const [phoneNumExist, setPhoneNumExist ] = useState(false)
     const {userData, setUserData, handleBack, handleNext, currentStep} = useStepper()
-    const { student } = useCount()
     const {closeModal, modalData } = useCrudModal()
 
      const studentSchema = z.object({
@@ -39,10 +37,6 @@ const GuardianInfo = () => {
         resolver: zodResolver(studentSchema),
       });
 
-      const Pnum = watch('parentPhoneNo')
-      useEffect(() => {
-        setPhoneNumExist(false);
-      }, [Pnum]);
 
       console.log(modalData?.[0])
 
@@ -83,19 +77,9 @@ const GuardianInfo = () => {
                 parentMiddleName: data.parentMiddleName,
                 parentLastName: data.parentLastName,
                 parentPhoneNo: data.parentPhoneNo,
-            }
-            const inputedrfidNum = formData.parentPhoneNo;
-            let parentPhoneNum = false;
-            
-            if (Array.isArray(student) && student.some(s => s.parentPhoneNo === inputedrfidNum)) {
-                parentPhoneNum = true;
-            }
-            if(parentPhoneNum){
-                setPhoneNumExist(true)
-            }else{
-                setUserData(formData)
-                handleNext()            
-            }            
+            }     
+            setUserData(formData)
+            handleNext()    
         }
 
 
@@ -142,8 +126,8 @@ const GuardianInfo = () => {
                     name='parentPhoneNo'
                     value={studentinfo? studentinfo.parentPhoneNo : ""}
                     control={control}
-                    error={!!errors.parentPhoneNo || phoneNumExist}
-                    helperText={phoneNumExist? "phone Number is already exist" : errors.parentPhoneNo?.message}
+                    error={!!errors.parentPhoneNo}
+                    helperText={errors.parentPhoneNo?.message}
                 />     
             </Stack>          
             <div className="flex my-5 justify-end gap-4">

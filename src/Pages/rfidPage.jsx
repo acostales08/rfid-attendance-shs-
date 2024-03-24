@@ -93,15 +93,7 @@ const RfidAttendance = () => {
         <div className=" h-full w-full p-6">
             <div className="border h-[55vh] w-[65vh]">
                 <div className="flex justify-center items-end">
-                {name.result === 1 ? (
-                       <h3 className='p-4 w-[75%] text-center text-xl text-gray-600'>rfid not exist sa student table</h3>
-                     ):name.result === 2 ? (                    
-                         <h3 className='p-4 w-[75%] text-center text-xl text-gray-600'>Welcome</h3>
-                     ) : name.result === 5 ? (
-                       <h3 className='p-4 w-[75%] text-center text-xl text-gray-600'>Bye </h3>
-                    ): name.result === 3 ? (
-                       <h3 className='p-4 w-[75%] text-center text-[12px] text-gray-600 '>You can no longer scan an RFID card because you timed in and out today!</h3>
-                     ) : (<></>)}
+                  <img src={name.image} alt="" />
                 </div>
             </div> 
             <div className="w-full border p-6 pl-2 flex gap-3 text-xl ">

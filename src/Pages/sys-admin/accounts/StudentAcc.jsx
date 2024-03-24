@@ -6,7 +6,7 @@ import {
   ControlledButton, 
   ControlledDataTable, 
   StudentForm, 
-  AddAcademic, 
+  AddImage, 
   ControlledModal, 
   ControlledBackdrop 
 } from '../../../Components';
@@ -39,7 +39,7 @@ const StudentAcc = () => {
         case "Create Student Account":
            return <StudentForm onClick={closeModal} displayData={displayData}/>;
         case "Add new academic records":
-           return <AddAcademic/>;
+           return <AddImage/>;
         case "View & Edit student information":
            return <StudentForm onClick={closeModal} displayData={displayData}/>;
         default:
@@ -124,8 +124,6 @@ const StudentAcc = () => {
     },
   ];
   const studentData = student.length === 0 ? [] : student;
-
-  console.log(student)
   return (
     <>
     {loading? <ControlledBackdrop open={loading}/> : (

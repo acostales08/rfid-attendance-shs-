@@ -4,11 +4,12 @@ import { useStepper } from '../../../utils/context/stepperContext';
 import StudentInfoForm from '../../Form/sys-admin-forms/Student-form/studentInfo'
 import GuardianInfo from '../../Form/sys-admin-forms/Student-form/guardianInfo'
 import AcademicsForm from '../../Form/sys-admin-forms/Student-form/academics'
+import AddImage from '../../Form/sys-admin-forms/Student-form/addImg';
 
 const StudentForm = ({displayData}) => {
 
   const { currentStep } = useStepper()
-  const steps = ['Student Info', 'Guardians Info', 'Select Section'];
+  const steps = ['Student Info', 'Guardians Info', 'Select Section', 'upload Photo'];
 
   const renderStepContent = (step) => {
     switch (step) {
@@ -18,6 +19,8 @@ const StudentForm = ({displayData}) => {
         return <GuardianInfo />;
       case 3:
         return <AcademicsForm displayData={displayData}/>;
+      case 4:
+        return <AddImage />;
       default:
         return null;
     }
