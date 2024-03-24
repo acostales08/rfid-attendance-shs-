@@ -19,7 +19,7 @@ const TeacherInformation = () => {
   const displayData = async () => {
     try{
       const teacherData = await fetchAccountData('/displayAllTeacher');
-      setTeacherInfo(teacherData);      
+      setTeacherInfo(teacherData.data);      
     }catch(error){
       console.log("errorr fetching data", error);
     }finally{

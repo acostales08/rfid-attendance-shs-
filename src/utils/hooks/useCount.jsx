@@ -12,24 +12,38 @@ const useCount = () => {
 
   useEffect(() => {
     fetchData();
+    displayData()
     fetchAttendace()
     fetchStudentPerCourse()
     fetchAttendanceData()
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const [studentData, teacherData] = await Promise.all([
-        fetchAccountData("/displayAllStudent"),
-        fetchAccountData("/displayAllTeacher")
-      ]);
+  // const fetchData = async () => {
+  //   try {
+  //     const [studentData, teacherData] = await Promise.all([
+  //       fetchAccountData("/displayAllStudent"),
+  //       fetchAccountData("/displayAllTeacher")
+  //     ]);
 
-      setStudent(studentData);
-      setTeacher(teacherData);
-      setLoading(false);
-    } catch (error) {
-      setError(error);
-      setLoading(false);
+  //     setStudent(studentData.data);
+  //     setTeacher(teacherData.data);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     setError(error);
+  //     setLoading(false);
+  //   }
+  // };
+
+  const fetchData = async() => {
+    const studentData = await fetchAccountData('/displayAllStudent')
+    setStudent(studentData.data);
+  }
+  const displayData = async () => {
+    try{
+      const teacherData = await fetchAccountData('/displayAllTeacher');
+      setTeacher(teacherData.data);      
+    }catch(error){
+      console.log("errorr fetching data", error);
     }
   };
 

@@ -19,7 +19,7 @@ const StudentProfile = () => {
   const displayData = async () => {
     try{
       const studentData = await fetchAccountData('/displayAllStudent');
-      setStudentInfo(studentData);     
+      setStudentInfo(studentData.data);     
        
     }catch(error){
       console.log("error fetching data", error);

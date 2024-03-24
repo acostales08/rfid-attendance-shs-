@@ -41,6 +41,7 @@ const RfidAttendance = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+  console.log(name)
 
   const onSubmitData = async (data) => {
     try {
@@ -90,14 +91,25 @@ const RfidAttendance = () => {
         </div>
       </Paper>
       <Paper elevation={3}>
-        <div className=" h-full w-full p-6">
-            <div className="border h-[55vh] w-[65vh]">
+        <div className=" h-full w-full p-5">
+            <div className="border h-[55vh] w-[80vh]">
                 <div className="flex justify-center items-end">
-                  <img src={name.imgUrl} alt="" width="400" height="340"/>
+                  <img src={name.image} alt="" />
                 </div>
             </div> 
+            <div className="w-full h-fit border flex justify-center items-center">
+            {name.result === 1 ? (
+                       <h3 className='p-4 w-[75%] text-center text-[20px] text-gray-600'>rfid not exist sa student table</h3>
+                     ):name.result === 2 ? (                    
+                         <h3 className='p-4 w-[75%] text-center text-[20px] text-gray-600'>Welcome</h3>
+                     ) : name.result === 5 ? (
+                       <h3 className='p-4 w-[75%] text-center text-[20px] text-gray-600'>Bye </h3>
+                    ): name.result === 3 ? (
+                       <h3 className='p-4 w-[75%] text-center text-[12px] text-gray-600 '>You can no longer scan an RFID card because you timed in and out today!</h3>
+                     ) : (<></>)}
+            </div>
             <div className="w-full border p-6 pl-2 flex gap-3 text-xl ">
-              <h3 className="">Fullname</h3>
+              <h3 className="">Fullname:</h3>
               <h3 className="border rounder-md w-full p-1">{name.fullname}</h3>
             </div>
         </div>

@@ -19,6 +19,8 @@ const StudentAcc = () => {
   const [ student, setStudent ] = useState([]);
   const [ loading, setLoading ] = useState(true)
 
+  console.log(student)
+
   const handleOpenAddModal = () => {
     openModal(null, "Create Student Account")
   };
@@ -39,7 +41,7 @@ const StudentAcc = () => {
         case "Create Student Account":
            return <StudentForm onClick={closeModal} displayData={displayData}/>;
         case "Add new academic records":
-           return <AddImage onClick={closeModal} displayData={displayData}/>;
+           return <AddImage/>;
         case "View & Edit student information":
            return <StudentForm onClick={closeModal} displayData={displayData}/>;
         default:
@@ -123,7 +125,8 @@ const StudentAcc = () => {
       ),
     },
   ];
-  const studentData = student.length === 0 ? [] : student;
+  const studentData = student === "No record" ? [] : student;
+
   return (
     <>
     {loading? <ControlledBackdrop open={loading}/> : (
