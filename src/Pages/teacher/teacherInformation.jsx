@@ -10,6 +10,7 @@ const TeacherInformation = () => {
   const [loading, setLoading] = useState(false)
 
   const { user } = useUser()
+console.log(teacherInfo)
 
   useEffect(() => {
     displayData();
@@ -33,9 +34,10 @@ const TeacherInformation = () => {
   }
 
   const myProfile = teacherInfo.filter(item => item.employeeId === user.employeeId)
-  console.log(classes)
+
 
   const NumberedCell = ({ rowIndex }) => <div>{rowIndex}</div>;
+
 
   const columns = [
     {
@@ -66,7 +68,7 @@ const TeacherInformation = () => {
               padding: "32px",
               flexDirection: "column"
             }}>
-              {teacherInfo.map((item, index) => (
+              {myProfile.map((item, index) => (
                 <React.Fragment key={index}>
                   <h1 className="text-gray-600 text-2xl pb-8">Profile</h1>
                   <div className="text-1xl text-gray-600 text-[16px] tracking-widest">

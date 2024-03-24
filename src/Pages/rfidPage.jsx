@@ -48,9 +48,9 @@ const RfidAttendance = () => {
         const formData = {
           rfid: data.rfid
         }
-        console.log(formData)
         const response = await postAttendance('/time-in-time-out', formData)
         const message = response.data;
+        console.log(message)
         setName(message)
         setRfidValue('');
         textFieldRef.current.focus();
@@ -94,7 +94,7 @@ const RfidAttendance = () => {
         <div className=" h-full w-full p-5">
             <div className="border h-[55vh] w-[80vh]">
                 <div className="flex justify-center items-end">
-                  <img src={name.image} alt="" />
+                  <img src='{name.imgUrl}' alt="" />
                 </div>
             </div> 
             <div className="w-full h-fit border flex justify-center items-center">
