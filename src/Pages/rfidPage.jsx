@@ -41,7 +41,7 @@ const RfidAttendance = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  console.log(name)
+  console.log(name?.imgUrl)
 
   const onSubmitData = async (data) => {
     try {
@@ -50,7 +50,6 @@ const RfidAttendance = () => {
         }
         const response = await postAttendance('/time-in-time-out', formData)
         const message = response.data;
-        console.log(message)
         setName(message)
         setRfidValue('');
         textFieldRef.current.focus();
@@ -94,7 +93,7 @@ const RfidAttendance = () => {
         <div className=" h-full w-full p-5">
             <div className="border h-[55vh] w-[80vh]">
                 <div className="flex justify-center items-end">
-                  <img src='{name.imgUrl}' alt="" />
+                  <img src={name?.imgUrl} alt="" />
                 </div>
             </div> 
             <div className="w-full h-fit border flex justify-center items-center">

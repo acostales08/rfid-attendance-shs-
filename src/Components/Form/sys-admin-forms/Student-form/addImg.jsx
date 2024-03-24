@@ -26,7 +26,7 @@ const AddImage = ({ displayData }) => {
   const [imgUrl, setImgUrl] = useState('')
 
  
-
+console.log(modalData?.[0].imageurl)
   // const { handleSubmit, formState: { errors } } = useForm();
 
   const handleClick = (e) => {
@@ -99,14 +99,14 @@ const AddImage = ({ displayData }) => {
   //   };
   // };
   
-  console.log("data:" + userData.lastName);
+  console.log("data:" + userData.imageurl);
 
   const onSubmit = async (e, data) => {
     e.preventDefault();
     if(modalData){
       const formDatas = {
         ...userData,
-        image: data.image
+        imageurl: data.imgUrl
       };
       setUserData(formDatas);      
       try {
@@ -175,7 +175,7 @@ const AddImage = ({ displayData }) => {
       <form onSubmit={onSubmit}>
         <div className="mb-12 h-full w-full flex justify-center items-center rounded-md">
           <div className="border h-[32vh] w-[32vh] p-4">
-            <img src={imgUrl} alt="Uploaded" />
+            <img src={modalData ? modalData?.[0].imageurl: imgUrl} alt="Uploaded" />
           </div>
         </div>
         <div className="border mb-4 mx-4">

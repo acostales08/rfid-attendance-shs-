@@ -104,14 +104,14 @@ const SysDashboard = () => {
       selector: (row) => row.fullname,
       sortable: true,
       center: true,
-      width: '200px',
+      width: '150px',
     },
     {
       name: 'Section',
       selector: (row) => row.classes,
       sortable: true,
       center: true,
-      width: '200px',
+      width: '150px',
     },
     {
       name: 'Time In',
@@ -132,7 +132,7 @@ const SysDashboard = () => {
       selector: (row) => row.createdAt,
       sortable: true,
       center: true,
-      width: '200px',
+      width: '150px',
     },
   ];
 
@@ -155,12 +155,12 @@ const SysDashboard = () => {
         </div>
         <div className="flex gap-2 sm:flex-col lg:flex">
         <div className="h-[50vh] w-[65%] sm:h-[40vh] sm:w-full">
-          <Paper elevation={3} style={{ maxWidth: '100%', overflowX: 'auto' }}>
-            <div className="container mx-auto h-[50vh] sm:h-[40vh] flex justify-center items-center p-4 lg:p-8">
-              <ControlledDataTable columns={columns} data={stdattendance} />
-            </div>
-          </Paper>
-        </div>
+        <Paper elevation={3} style={{ maxWidth: '100%', overflowX: 'auto' }}>
+          <div className="container mx-auto h-[50vh] sm:h-[40vh] flex justify-center items-center p-4 lg:p-8">
+            <ControlledDataTable columns={columns} data={stdattendance} />
+          </div>
+        </Paper>
+    </div>
         <div className="h-[50vh] w-[35%] sm:h-[40vh] sm:w-full">
           <Paper elevation={3}>
             <div className="h-[50vh] sm:h-[40vh] flex justify-center items-center p-4 lg:p-8">
