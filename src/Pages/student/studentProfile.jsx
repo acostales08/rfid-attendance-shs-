@@ -46,8 +46,10 @@ const StudentProfile = () => {
   //     center: true,
   //     width: "300px"
   //   }
+
   // ];
 
+  console.log(studentAccount)
   return (
     <>
     {loading? <ControlledBackdrop open={loading}/> : (
@@ -63,6 +65,9 @@ const StudentProfile = () => {
             }}>
               {studentAccount.map((item, index) => (
                 <React.Fragment key={index}>
+                  <div className="h-[150px] w-[150px] border rounded-full mb-2 overflow-hidden">
+                        <img src={item.imageurl} alt="" className='h-[150px] w-[150px]' />
+                  </div>
                   <h1 className="text-gray-600 text-2xl">Student Profile</h1>
                   <h1 className="text-gray-600 text-1xl">{item.coursename}</h1>
                   <div className="p-3 text-1xl text-gray-600">

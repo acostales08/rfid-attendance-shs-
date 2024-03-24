@@ -91,9 +91,9 @@ const RfidAttendance = () => {
       </Paper>
       <Paper elevation={3}>
         <div className=" h-full w-full p-5">
-            <div className="border h-[55vh] w-[80vh]">
+            <div className="border h-[55vh] w-[80vh] overflow-hidden">
                 <div className="flex justify-center items-end">
-                  <img src={name?.imgUrl} alt="" />
+                  <img src={name?.imgUrl} alt="" className='h-[55vh] w-[80vh]' />
                 </div>
             </div> 
             <div className="w-full h-fit border flex justify-center items-center">
