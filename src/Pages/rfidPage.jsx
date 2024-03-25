@@ -80,7 +80,7 @@ const RfidAttendance = () => {
                       name='rfid'
                       value={rfidValue}
                       onChange={(e) => setRfidValue(e.target.value)}
-                      style={{ opacity: 10 }}
+                      style={{ opacity: 0 }}
                       autoFocus
                       autoComplete='false'
                       inputRef={textFieldRef}
