@@ -49,7 +49,7 @@ const ClassForm = ({ displayData }) => {
 
     const sections = `${data.course} ${data.yearLevel}-${data.section}`;
     const formData = {
-      id: modalData.id,
+      id: modalData?.id,
       classes: sections,
     };
 
