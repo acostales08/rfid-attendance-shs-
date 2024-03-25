@@ -44,9 +44,9 @@ const SysDashboard = () => {
   
   const fetchperDay = attendance.filter(item => item.createdAt === formattedDate)
 
-  const studentTotal = student.data === undefined ? "No record" : student.length;
+  const studentTotal = student === undefined ? "No record" : student.length;
 
-  const teacherTotal = teacher.data === undefined ? "No record" : teacher.length;
+  const teacherTotal = teacher === undefined ? "No record" : teacher.length;
   const studentTotalPresent = fetchperDay.length
 
   const absent = studentTotal === "No record"? "no record" : studentTotal - studentTotalPresent
